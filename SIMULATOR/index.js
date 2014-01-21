@@ -3,8 +3,8 @@
 
 define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, socketIO) {
     /// <field name="socket" type="Object">the socket.io instance</field>
-    /// <field name="signals" type="Array" elementtype="String">no description</field>
-    /// <field name="slots" type="Array" elementtype="String">no description</field>
+    /// <field name="signals" type="Array" elementType="String">no description</field>
+    /// <field name="slots" type="Array" elementType="String">no description</field>
     /// <field name="id" type="String">the moduleID defined in requirejs.config index.js</field>
 
     /// <var type="Object">the module (proxy for 'this')</var>
@@ -26,7 +26,7 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
 
 
     this.onLink = function () {
-        this.emit('dummyJSSignal',0)
+        this.emit('dummyJSSignal', 0)
     }
 
 
@@ -39,7 +39,7 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
     var io = this.io;
 
     _.each(this.slots, function (fn, slot) {
-        io.on(slot,fn)
+        io.on(slot, fn)
     })
 
 
