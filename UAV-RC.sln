@@ -46,6 +46,28 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "CORE", "http://localhost:53
 		SlnRelativePath = "CORE\"
 	EndProjectSection
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SIMULATOR", "http://localhost:57040", "{2C879D9B-6AD1-4163-918E-8F1BEE00E935}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_57040"
+		Debug.AspNetCompiler.PhysicalPath = "SIMULATOR\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57040\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_57040"
+		Release.AspNetCompiler.PhysicalPath = "SIMULATOR\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57040\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "SIMULATOR\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +77,8 @@ Global
 		{6FC0766E-241A-4C06-A25D-C332616C5752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA63DF38-624F-4CA9-9583-40C233475636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA63DF38-624F-4CA9-9583-40C233475636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C879D9B-6AD1-4163-918E-8F1BEE00E935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C879D9B-6AD1-4163-918E-8F1BEE00E935}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
