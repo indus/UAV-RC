@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1000" />
+    <title>GreenSock Draggable and ThrowPropsPlugin Demo</title>
+    <style>
+    body {
+        padding: 0;
+        margin: 0;
+        background-color: black;
+    }
+    .box {
+        background-color: #91e600;
+        text-align: center;
+        font-family: Asap, Avenir, Arial, sans-serif;
+        width: 200px;
+        height: 100px;
+        line-height: 100px;
+        color: black;
+        position: absolute;
+        border-radius: 10px;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="container" style="position:relative; height:601px; overflow:hidden;">
+        <div id="box" class="box">UAV</div>
+    </div>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="js/plugins/ThrowPropsPlugin.min.js"></script>
+    <script src="js/utils/Draggable.min.js"></script>
+    <script src="js/TweenMax.min.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        //create the grid (feel free to tweak any of these numbers)
+        //set the container's size to match the grid
+        //TweenLite.set($container, { height: gridRows * gridHeight + 1, width: gridColumns * gridWidth + 1 });
+        //now make both boxes draggable.
+
+        var box = $('#box')[0];
+
+        Draggable.create("#box", {
+            edgeTolerance: 0.2,
+            //type: "top,left", //
+            onDragEnd: function() {
+                var box = this.target
+                //note: "this" refers to the Draggable instance inside callbacks like this, making it easy to get the target, xMax, xMin, yMax, and yMin.
+                ThrowPropsPlugin.to(this.target, {
+                    throwProps: {
+                        resistance: 1000, //increase or decrease this number to add more or less friction/resistance.
+                        top: {
+                            velocity: 'auto', //since we're tracking "top", the tracked value will be calculated and used automatically.
+                            end: 0
+                        },
+                        left: {
+                            velocity: "auto", //since we're tracking "left", the tracked value will be calculated and used automatically.
+                            end: 0
+                        }
+                    },
+                    ease: Sine.easeOut
+                }, 10, 2, 0.4); //set maximum duration to 2 seconds, minimum duration to 0.2 seconds, and an overshoot threshold of 0.4
+            }
+        });
+
+
+        ThrowPropsPlugin.track(box, "top,left,rotation");
+
+        $('body').click(function(e) {
+            console.log(e.target, e.pageX, e.pageY)
+
+            var d = Math.sqrt(Math.pow(e.pageX - box.offsetLeft,2)+Math.pow(e.pageY - box.offsetTop,2));
+
+            var T = d/200;
+            var Tmin = T/1.1;
+            var Tmax = T*1.1;
+
+            //
+
+           var rot =  Math.atan2(-(e.pageX - box.offsetLeft), (e.pageY - box.offsetTop))*(180 / Math.PI);
+
+
+
+
+
+
+            ThrowPropsPlugin.to(box, {
+                throwProps: {
+                    resistance: 100, //increase or decrease this number to add more or less friction/resistance.
+                    top: {
+                        velocity: 'auto', //since we're tracking "top", the tracked value will be calculated and used automatically.
+                        end: e.pageY
+                    },
+                    left: {
+                        velocity: "auto", //since we're tracking "left", the tracked value will be calculated and used automatically.
+                        end: e.pageX
+                    },
+                    rotation: {
+                        velocity: "auto", //since we're tracking "left", the tracked value will be calculated and used automatically.
+                        end: rot
+                    }
+                },
+                ease: Sine.easeOut
+            }, Tmax, Tmin, 0.4);
+
+
+
+        })
+
+
+
+    });
+    </script>
+</body>
+
+</html>

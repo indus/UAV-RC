@@ -36,6 +36,10 @@ requirejs.config({
         dummyJSModule: 'src/dummy/dummyJS',
         dummyPYModule: 'src/dummy/dummyPY.py',
         Simulator: '../SIMULATOR/index',
+        // TODO: combine to one 'gsap' dependancy
+        gsapTweenLite: '../SIMULATOR/src/gsap.nodemod/TweenLite',
+        gsap: '../SIMULATOR/src/gsap.nodemod/plugins/ThrowPropsPlugin.hacked', // greensock membership ($99/year)
+        uavModel: '../SIMULATOR/src/uavModel'
     },
     config: {
     }
@@ -44,9 +48,7 @@ requirejs.config({
 var requireModules = args.module || ['io!', 'io!Simulator'];
 
 
-
-
-requirejs(requireModules, function ( /*js, py, io*/) {
+requirejs(requireModules, function () {
     console.log('RUN');
 });
 

@@ -1,5 +1,4 @@
-﻿'use strict';
-
+﻿'use strict'
 
 define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, socketIO) {
     /// <field name="socket" type="Object">the socket.io instance</field>
@@ -11,7 +10,7 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
     var self = this;
 
     this.id = m.id
-    this.signals = ['dummyJSSignal'];
+    this.signals = { dummyJSSignal: true };
     this.slots =
         {
             dummyJSSlot: function () {
@@ -19,17 +18,15 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
             },
             dummyJSSignal: function (data) {
                 console.log('dummyJSSignal', data);
-                //this.emit('dummyJSSignal', ++data)
             }
         };
 
 
-
     this.onLink = function () {
-        this.emit('dummyJSSignal',0)
+        this.emit('dummyJSSignal', 0)
     }
 
-    
+
 
     this.io = socketIO.connect(args.url, {
         'reconnection delay': 0,
@@ -39,17 +36,17 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
     var io = this.io;
 
     _.each(this.slots, function (fn, slot) {
-        io.on(slot,fn)
+        io.on(slot, fn)
     })
 
-    
+
     //Fired upon a succesful connection.
     io.on('connect', function () {
         console.log("connect");
 
         var moduleDesc = {
             id: self.id,
-            signals: self.signals,
+            signals: _.keys(self.signals),
             slots: _.keys(self.slots)
         }
 
@@ -98,7 +95,6 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
     io.on('reconnect_failed', function () {
         console.log("reconnect_failed");
     });
-
 
 
     return this;

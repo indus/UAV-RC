@@ -1,7 +1,7 @@
 ﻿'use strict';
 var assert = require('assert');
 
-define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_process'], function (m, args, _, express, http, io, child_process) {
+define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, child_process) {
     /// <var type="Object">the module (proxy for 'this')</var>
     var self = this;
 
@@ -18,10 +18,9 @@ define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_proce
 
         if (name == 'core' && !this.core) {
             this.init(name, req, onload, config, moduleConfig);
-            onload();
             return;
         } else {
-            console.log("load Module '" + name+"'");
+            console.log("load Module '" + name + "'");
         }
 
         if (true || configIO.core.returnLate) {
@@ -32,8 +31,8 @@ define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_proce
         };
 
         var modulePath = config.paths[name] || name;
-        
-        var moduleType =  modulePath.replace(/^(?:\.\.\/)+/, "").match(/\.[^.]+$/) || "js"
+
+        var moduleType = modulePath.replace(/^(?:\.\.\/)+/, "").match(/\.[^.]+$/) || "js"
 
         switch (moduleType) {
             case "py":
@@ -43,7 +42,7 @@ define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_proce
                 this.loadModuleJS(name, req, onload, config, moduleConfig)
                 break;
             default:
-                assert(false,"Unknown FileType: " + moduleType)
+                assert(false, "Unknown FileType: " + moduleType)
                 break;
         }
     }
@@ -52,22 +51,22 @@ define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_proce
         var spawn = child_process.spawn,
 				pythonProcess = spawn('python', [config.paths[name]]);
 
-            pythonProcess.id = name;
-            pythonProcess.config = config.config[name];
+        pythonProcess.id = name;
+        pythonProcess.config = config.config[name];
 
-            pythonProcess.stdout.on('data', function (data) {
-                console.log("test"+String(data).trim());
-                //pythonProcess.info(String(data).trim())
-                //console.log(String(data))
-                //log(pythonProcess, String(data))
-            });
+        pythonProcess.stdout.on('data', function (data) {
+            console.log("test" + String(data).trim());
+            //pythonProcess.info(String(data).trim())
+            //console.log(String(data))
+            //log(pythonProcess, String(data))
+        });
 
-            pythonProcess.on('close', function (code) {
-                console.log('python process \'%s\' exited with code \'%d\'', name, code);
-            });
+        pythonProcess.on('close', function (code) {
+            console.log('python process \'%s\' exited with code \'%d\'', name, code);
+        });
 
-            //io.pythonCallbacks[name] = onload;
-            onload && onload(pythonProcess)
+        //io.pythonCallbacks[name] = onload;
+        onload && onload(pythonProcess)
 
     }
 
@@ -80,60 +79,58 @@ define(['module', 'args', 'lodash', 'express', 'http', 'socket.io', 'child_proce
 
     // init the core
     this.init = function (name, req, onload, config, moduleConfig) {
+        require(['express', 'http', 'socket.io'], function (express, http, io) {
 
-        // with Express-Server
-        this.express = express();
-        this.server = http.createServer(this.express);
-        this.server.listen(args.port, args.host);
+            // with Express-Server
+            self.express = express();
+            self.server = http.createServer(self.express);
+            self.server.listen(args.port, args.host);
 
-        this.io = io.listen(this.server); //  configIO.core.opt
+            self.io = io.listen(self.server); //  configIO.core.opt
 
-        // without express
-        // var core = io.listen(80);
+            // without express
+            // var core = io.listen(80);
 
-        var onConnection = function (socket) {
-            socket.on('link', function (moduleDesc, callbackFn) {
-                console.log("link", moduleDesc);
+            var onConnection = function (socket) {
+                socket.on('link', function (moduleDesc, callbackFn) {
+                    console.log("link", moduleDesc);
 
-                var module = self.modules[moduleDesc.id] = self.modules[moduleDesc.id] || {};
-                module.id = moduleDesc.id;
-                module.slots = moduleDesc.slots;
-                module.signals = moduleDesc.signals;
-                assert(!module.socket, module.id + " - looks like module allready linked")
-                module.socket = socket;
+                    var module = self.modules[moduleDesc.id] = self.modules[moduleDesc.id] || {};
+                    module.id = moduleDesc.id;
+                    module.slots = moduleDesc.slots;
+                    module.signals = moduleDesc.signals;
+                    assert(!module.socket, module.id + " - looks like module allready linked")
+                    module.socket = socket;
 
-                socket.name = module.id;
+                    socket.name = module.id;
 
-                _.each(module.slots, function (slot) {
-                    socket.join(slot)
-                })
-
-                _.each(module.signals, function (signal) {
-                    socket.on(signal, function (data) {
-                        assert(arguments.length == 1, module.id + " - too much parameters in signal '" + signal + "'");
-                        self.io.sockets.in(signal).emit(signal, data)
+                    _.each(module.slots, function (slot) {
+                        socket.join(slot)
                     })
+
+                    _.each(module.signals, function (signal) {
+                        socket.on(signal, function (data) {
+                            assert(arguments.length == 1, module.id + " - too much parameters in signal '" + signal + "'");
+                            self.io.sockets.in(signal).emit(signal, data)
+                        })
+                    })
+
+                    if (_.isFunction(callbackFn))
+                        callbackFn();
+
+                    if (_.isFunction(module.onload)) {
+                        module.onload();
+                    }
+
                 })
 
-                if (_.isFunction(callbackFn))
-                    callbackFn();
-
-                if (_.isFunction(module.onload)) {
-                    module.onload();
-                }
-
-            })
-        };
-
-        this.io.sockets.on('connection', onConnection)
+            };
+            self.io.sockets.on('connection', onConnection);
+            onload();
+        })
     }
 
-
-
-
-
-
-
+    return this;
 });
 
 
