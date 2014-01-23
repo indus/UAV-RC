@@ -41,8 +41,6 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
         self.slots.COMMAND_GOTO(goto)
     }, 200)*/
 
-
-
     this.id = m.id
 
     this.signals = {
@@ -64,7 +62,6 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
             console.log('debug', (arguments.length - 1) ? arguments : data);
         },
         COMMAND_GOTO: function (goto) {
-
             var distance = geolib.getDistance(uav.GPS_DATA, goto); // meter
             var bearing = geolib.getBearing(uav.GPS_DATA, goto); // deg
 
@@ -72,7 +69,7 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
             var durationMin = distance / speedMax;
             var durationMax = duration * 1.2;
 
-            var tween = ThrowPropsPlugin.to(uav.GPS_DATA, {
+            self.tween = ThrowPropsPlugin.to(uav.GPS_DATA, {
                 throwProps: {
                     resistance: resistance,
                     latitude: {
@@ -89,8 +86,8 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
                     }
                 },
                 onUpdate: function () {
-
-                    console.log("\u001b[1F" + uav.GPS_DATA.latitude.toFixed(10), uav.GPS_DATA.longitude.toFixed(10), uav.GPS_DATA.height.toFixed(2), uav.GPS_DATA.heading.toFixed(2));
+                    self.io.emit('GPS_DATA', _.omit(uav.GPS_DATA, '_gsTweenID'))
+                    //console.log("\u001b[1F" + uav.GPS_DATA.latitude.toFixed(10), uav.GPS_DATA.longitude.toFixed(10), uav.GPS_DATA.height.toFixed(2), uav.GPS_DATA.heading.toFixed(2));
                 },
                 ease: gsap.Quad.easeOut
             }, durationMax, durationMin, overshootThreshold);
@@ -152,13 +149,13 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
 
            self.io.emit('POLL', poll)
         },
-        _SET: function (data, packageID) {
-            console.log("x",arguments)
-            if (arguments.length == 1) {
-                console.log("xx", self.slots._SET);
-                _.forEach(data, self.slots._SET)
-            } else if (packageID && data) {
-                ;
+        _SET: function (data) {
+
+            if (self.tween)
+            self.tween.kill();
+
+
+            _.forEach(data, function (values, packageID) {
                 if (_.isNumber(packageID)) {
                     packageID = {
                         0x0001: 'LL_STATUS',
@@ -172,12 +169,15 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
                         0x0800: 'CAM_Data'
                     }[packageID]
                 }
+
                 if (uav[packageID]) {
-                    uav[packageID] = _.mapValues(uav[packageID], function (v, k) {
-                        return _.isUndefined(data[k]) ? v : data[k]
+                    _.forEach(values, function (value, key) {
+                        uav[packageID][key] = value;
                     });
                 }
-            }
+
+            })
+
         },
 
 
@@ -185,7 +185,7 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
 
 
     this.onLink = function () {
-       self.io.emit('debug', 3)
+       //self.io.emit('debug', 3)
     }
 
 

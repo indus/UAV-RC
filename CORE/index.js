@@ -19,10 +19,11 @@ var args = require('stdio').getopt({
     }
 });
 
-args.host = args.host || '127.0.0.1';
+args.host = args.host || 'localhost';
 args.port = args.port || 8080;
 args.url = 'http://' + args.host + ':' + args.port;
 args.module = args.module ? args.module.split(",") : null;
+args.__dirname = __dirname;
 
 var requirejs = require('requirejs');
 requirejs.define('args', function () { return args });
@@ -45,7 +46,7 @@ requirejs.config({
     }
 })
 
-var requireModules = args.module || ['io!', 'io!Simulator'];
+var requireModules = args.module || ['io!', 'io!Simulator']; //
 
 
 requirejs(requireModules, function () {

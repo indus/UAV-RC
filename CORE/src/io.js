@@ -81,12 +81,16 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
     this.init = function (name, req, onload, config, moduleConfig) {
         require(['express', 'http', 'socket.io'], function (express, http, io) {
 
+    
+
             // with Express-Server
             self.express = express();
+            // TODO make Web-Server module
             self.server = http.createServer(self.express);
+            self.express.use('/', express.static('C:\\Users\\Stefan\\Documents\\dev\\UAV-RC\\UI\\app'));   
+            console.log(args.port, args.host, args.__dirname);
             self.server.listen(args.port, args.host);
-
-            self.io = io.listen(self.server); //  configIO.core.opt
+            self.io = io.listen(self.server, {}); //  configIO.core.opt
 
             // without express
             // var core = io.listen(80);
@@ -99,7 +103,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                     module.id = moduleDesc.id;
                     module.slots = moduleDesc.slots;
                     module.signals = moduleDesc.signals;
-                    assert(!module.socket, module.id + " - looks like module allready linked")
+                    //assert(!module.socket, module.id + " - looks like module allready linked")
                     module.socket = socket;
 
                     socket.name = module.id;
@@ -110,7 +114,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
                     _.each(module.signals, function (signal) {
                         socket.on(signal, function (data) {
-                            assert(arguments.length == 1, module.id + " - too much parameters in signal '" + signal + "'");
+                            //assert(arguments.length == 1, module.id + " - too much parameters in signal '" + signal + "'");
                             self.io.sockets.in(signal).emit(signal, data)
                         })
                     })
