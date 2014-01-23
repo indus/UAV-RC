@@ -1,0 +1,14 @@
+﻿<div class="input-group">
+    <span class="input-group-addon">latitude</span>
+    <input type="text" class="form-control" placeholder="°" ng-model="goto.latitude">
+</div>
+<div class="input-group">
+    <span class="input-group-addon">longitude</span>
+    <input type="text" class="form-control" placeholder="°" ng-model="goto.longitude">
+</div>
+<div class="input-group">
+    <span class="input-group-addon">height</span>
+    <input type="text" class="form-control" placeholder="m" ng-model="goto.height">
+</div>
+<button type="button" class="btn btn-success" ng-click="send()" ng-disabled="!linked">Send</button>
+<p>{{GPS_DATA}}</p>
