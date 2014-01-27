@@ -1,0 +1,43 @@
+.no-touch #mapUI{
+	header,footer {
+		nav {
+			& button:hover {
+				color:darken(@color_panel, 25%) !important;
+			}
+			&.button {
+				button {
+					&:hover {
+						background-color: lighten(@color_button, 10%) !important;
+						color:@color_panel !important;
+					};
+					&.active:hover {
+						background-color: darken(@color_panel, 20%) !important;
+						color:@color_main !important;
+					};
+				}
+			}
+		}
+	}
+}
+
+.touch #mapUI{
+	header,footer {
+		nav {
+			& button:active {
+				color:darken(@color_panel, 25%) !important;
+			}
+			&.button {
+				button {
+					&:active {
+						background-color: lighten(@color_button, 10%) !important;
+						color:@color_panel !important;
+					};
+					&.active:active {
+						background-color: darken(@color_panel, 20%) !important;
+						color:@color_main !important;
+					};
+				}
+			}
+		}
+	}
+}

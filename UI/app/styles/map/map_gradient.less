@@ -1,0 +1,75 @@
+
+header,footer {
+	nav {
+		&.button {
+			button {
+				.box-shadow(~"1px 1px 4px #666,1px 4px 15px rgba(0,0,0,.5), inset 0 0 20px 1px rgba(0,0,0,0.5)");
+
+				&.active {
+					.box-shadow(~"inset 2px 2px 10px 1px rgba(0,0,0,0.5)");
+				};
+				
+				&:disabled {
+					.box-shadow(~"0 1px 10px #fff");
+				};
+			}
+		}
+	}
+}
+
+aside {
+	nav {
+		.box-shadow(~"6px 0px 10px rgba(0,0,0,0.5),-5px 0px 10px rgba(0,0,0,0.2)");
+		button {
+			.box-shadow(~"6px 0px 10px rgba(0,0,0,0.5)")
+		}
+	}
+}
+
+header {
+	.box-shadow(~"-20px 8px 10px rgba(0,0,0,0.2)");
+	nav.button, nav button{
+		.box-shadow(~"-5px 8px 10px rgba(0,0,0,0.2)");
+	}
+}
+
+footer {
+	.box-shadow(~"-20px -8px 10px rgba(0,0,0,0.2)");
+	nav.button{
+		.box-shadow(~"-5px -8px 10px rgba(0,0,0,0.2)");
+	}
+}
+
+.no-touch #mapUI{
+	header,footer {
+		nav {
+			&.button {
+				button {
+					&:hover {
+						.box-shadow(~"1px 1px 2px #aaa,1px 4px 10px rgba(0,0,0,0.2), inset 0 0 20px 1px rgba(0,0,0,0.2)");
+					};
+					&.active:hover {
+						.box-shadow(~"inset 1px 1px 5px 1px rgba(0,0,0,0.3)");
+					};
+				}
+			}
+		}
+	}
+}
+
+.touch #mapUI{
+	header,footer {
+		nav {
+			&.button {
+				button {
+					&:active {
+						.box-shadow(~"1px 1px 2px #aaa,1px 4px 10px rgba(0,0,0,0.2), inset 0 0 20px 1px rgba(0,0,0,0.2)");
+					};
+					&.active:active {
+						.box-shadow(~"inset 1px 1px 5px 1px rgba(0,0,0,0.3)");
+					};
+				}
+			}
+		}
+	}
+}

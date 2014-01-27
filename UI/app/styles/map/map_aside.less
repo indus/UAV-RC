@@ -1,0 +1,130 @@
+#mapUI {
+	&.aside {
+		header,footer {
+			right:100%;
+			opacity:0;
+		}
+		aside {
+			width:100%;
+			overflow-y: auto;
+			section {
+			}
+		}
+	}
+}
+
+
+
+aside {
+	position:absolute;
+	right:0;
+	top:0;
+	bottom:0;
+	width:0;
+	background-color: @color_aside;
+	overflow: hidden;
+
+	section {
+		width: 100%;
+		padding-top: @padding*2;
+		padding-right: @padding*4;
+		padding-left: @padding*7;
+		padding-bottom:@padding*7 + @panelMinHeight + @size_button;
+	}
+
+	nav {
+		position:fixed;
+		top:0;
+		.size(@panelMinHeight,100%);
+		background-color: @color_panel;
+		padding: 0;
+		button {
+			position:absolute;
+			bottom:@padding*2+@panelMinHeight;
+			left:100%;
+			background-size: 0;
+			margin-left: 0px;
+			.size(@size_button);
+			background-color: @color_panel;
+			color: @color_button;
+			border: 0;
+			padding: 0;
+			overflow: hidden;
+			.border-radius(0 @radius @radius 0 );
+			&::-moz-focus-inner {
+				padding: 0;
+				border: 0
+			}
+		}
+	}
+
+	button {
+		i {
+			color:#fff;
+		}
+	}
+
+	i {
+		cursor:pointer;
+		color:@color_button;
+		font-family: "icon";
+		font-style: normal;
+
+		&.static {
+			cursor:normal;
+			color:#333333;
+		}
+	}
+}
+
+@media (min-width: @screen-tablet) and (max-width: @screen-md-max) {
+	#mapUI {
+		&.aside {
+			header,footer {
+				right:300px;
+				opacity:1;
+			}
+			aside {
+				width:300px;
+				overflow-y: auto;
+			}
+		}
+	}
+	aside {
+		section {
+			width: 300px
+		}
+		nav button {
+			display: none
+		}
+	}
+}
+
+@media (min-width: @screen-desktop) {
+	#mapUI {
+		&.aside {
+			header,footer {
+				right:600px;
+				opacity:1;
+			}
+			aside {
+				width:600px;
+				overflow-y: auto;
+			}
+		}
+	}
+	aside {
+		section {
+			width: 600px;
+			.multi-column {
+			-moz-column-count: 2;
+			-webkit-column-count: 2;
+			column-count: 2;}
+		}
+		nav button {
+			display: none
+		}
+	}
+
+}
+

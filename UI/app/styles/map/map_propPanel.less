@@ -1,0 +1,62 @@
+
+section.propPanel {
+	.size(100%,auto);
+	overflow: auto;
+	div.inner {
+		white-space:nowrap;
+		div {
+			display:inline-block;
+			padding:@padding;
+			margin: @padding*2  @padding*2 @padding @padding;
+			//*display:inline; //not good
+			//*padding-bottom:@padding*4;
+
+			i {
+
+				font-family: "icon";
+				font-size: 24px;
+				color: @color_main;
+			}
+
+			.key {
+				color: @color_main;
+				font-weight: 700;
+			}
+			.value {
+				vertical-align: text-top;
+			}
+		}
+
+		&.open {
+
+			div {
+				padding: 0 @padding;
+				.key {
+					display: none;
+				}
+
+				.value {
+					font-weight: 700;
+				}
+			}
+		}
+
+		&.expanded {
+
+			div {
+				i {
+					display: none;
+				}
+				.key {
+					display: block;
+					padding-bottom: 10px;
+				}
+				.value {
+					font-size: 24px;
+				}
+				border-left: 1px solid #888;
+			}
+		}
+
+	}
+}

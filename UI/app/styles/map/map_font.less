@@ -1,0 +1,22 @@
+@iconPath: "fonts";
+@iconName: "mm-webfont";
+
+@font-face {
+	font-family: 'icon';
+	src: url('@{iconPath}/@{iconName}.eot');
+	src: url('@{iconPath}/@{iconName}.eot?#iefix') format('embedded-opentype'),
+	url('@{iconPath}/@{iconName}.woff') format('woff'),
+	url('@{iconPath}/@{iconName}.ttf') format('truetype'),
+	url('@{iconPath}/@{iconName}.svg#iconregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	@font-face {
+		font-family: 'icon';
+		src: url('@{iconPath}/@{iconName}.svg#iconregular') format('svg');
+
+	}
+}

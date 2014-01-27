@@ -1,0 +1,256 @@
+#map {
+	background-color: rgb(100,100,100);
+	z-index: 0;
+}
+
+#mapUI {
+	.user-select(none);
+}
+
+@radius: 5px;
+@padding: 5px;
+@size_button: 40px;
+@size_label: 30px;
+@panelMinHeight: 10px;
+
+@color_panel:#eee;
+@color_aside:rgba(233,233,233,.9);
+@color_main:#1FC209;
+@color_button:lighten(#353331,10%);
+@color_button_text: lighten(@color_main,5%);
+
+/*
+@radius: 25px;
+@padding: 10px;
+@size_button: 45px;
+@size_label: 30px;
+@panelMinHeight: 10px;
+
+@color_panel:#353331;
+@color_aside:lighten(#fff, 10%);
+@color_main:#33aaff;
+@color_button:darken(@color_main,10%);
+@color_button_text: #fff;
+
+@radius: 0px;
+@padding: 3px;
+@size_button: 30px;
+@size_label: 25px;
+@panelMinHeight: 10px;
+
+@color_panel:#fff;
+@color_aside:darken(@color_panel, 10%);
+@color_main:#FF3D00;
+@color_button:@color_main;
+@color_button_text: #fff;*/
+
+
+
+.title {
+	line-height: 34px;
+	text-align: center;
+	font-weight: 700;
+	font-size: 18px;
+	span {
+		color: @color_main;
+		padding-left: 5px;
+		margin-left:5px;
+		font-weight: 400;
+		border-left: 1px solid @color_main;
+	}
+}
+
+header,footer {
+	z-index: 1;
+	position:absolute;
+	background-color: @color_panel;
+	min-height: @panelMinHeight;
+	left:0;
+	right:0;
+}
+
+
+
+nav {
+	position:absolute;
+	padding-right:@padding;
+	display: inline-block;
+	font-size: 0;
+	white-space: nowrap;
+	&.right {
+		right:0;
+	}
+	&.left {
+		left:0;
+	}
+
+
+	button {
+		background-size: 0;
+		.size(@size_button);
+		margin-left:@padding;
+		background-color: @color_panel;
+		color: @color_button;
+		border: 0;
+		padding: 0;
+		overflow: hidden;
+		&::-moz-focus-inner {
+			padding: 0;
+			border: 0
+		}
+		i {
+			font-style: normal;
+			line-height: @size_button;
+			display: inline-block;
+			margin: 0px;
+			text-align: middle;
+			font-family: "icon";
+			font-size: @size_label;
+			&.small {
+				font-size: @size_label/1.5;
+			}
+
+		}
+
+		&.active {
+			color:darken(@color_panel, 50%) !important;
+		};
+
+		&:disabled {
+			color:lighten(@color_button,10%) !important;
+			.opacity(.7);
+			cursor: not-allowed;
+		};
+	}
+
+
+	&.small {
+		button {
+			.size(@size_button/1.7);
+			i {
+				font-size: @size_label/1.8;
+				line-height: @size_button/1.7;
+			}
+		}
+	}
+
+	&.vertical {
+		padding-right:0;
+		button {
+			margin-left:0;
+			display:block;
+		}
+
+		&.left {
+			button {
+				.border-radius( 0 @radius @radius 0)
+			}
+		}
+
+		&.right {
+			button {
+				.border-radius(@radius 0 0 @radius)
+			}
+		}
+
+	}
+
+	&.button {
+		background-color: @color_panel;
+		button {
+			background-color: @color_button;
+			color: @color_button_text;
+			.border-radius(@radius);
+
+			&.active {
+				background-color: darken(@color_button_text, 10%) !important;
+				color:@color_panel !important;
+			};
+
+			&:disabled {
+				color:darken(@color_button_text,10%) !important;
+				.opacity(.7);
+				cursor: not-allowed;
+			};
+		}
+
+		&.vertical {
+			padding-left: @padding;
+			padding-right: @padding;
+			button {
+				.border-radius(@radius);
+			}
+		}
+
+	}
+}
+
+header {
+	top:0;
+	nav {
+		top:100%;
+		button {
+			//.box-shadow(~"1px 7px 8px rgba(0,0,0,0.5)");
+			.border-radius(0 0 @radius @radius);
+		}
+		&.button {
+			//.box-shadow(~"1px 7px 8px rgba(0,0,0,0.5)");
+			padding-bottom: @padding;
+			padding-top: @padding/2;
+			&.right{
+				.border-radius(0 0 0 @radius+@padding);
+			}
+			&.left{
+				.border-radius(0 0 @radius+@padding 0);
+			}
+
+			&.vertical {
+				padding-bottom: 0;
+				padding-top: 0;
+			}
+		}
+		&.vertical {
+			padding-top: @padding;
+			button {
+				margin-bottom:@padding;
+			}
+		}
+
+	}
+}
+
+footer {
+	bottom:0;
+	nav {
+		bottom:100%;
+		button {
+			//.box-shadow(~"1px -7px 8px rgba(0,0,0,0.5)");
+			.border-radius(@radius @radius 0 0);
+		}
+		&.button {
+			//.box-shadow(~"1px -7px 8px rgba(0,0,0,0.5)");
+			padding-top: @padding;
+			padding-bottom: @padding/2;
+			&.right{
+				.border-radius(@radius+@padding 0 0 0);
+			}
+			&.left{
+				.border-radius(0 @radius+@padding 0 0);
+			}
+
+			&.vertical {
+				padding-bottom: 0;
+				padding-top: 0;
+			}
+		}
+		&.vertical {
+			padding-bottom: @padding;
+			button {
+				margin-top:@padding;
+			}
+		}
+	}
+}
+
+
+
