@@ -1,5 +1,13 @@
 <!--<leaflet id="map" defaults="defaults" markers="markers" event-broadcast="events"></leaflet>-->
 
+<div style="position:absolute; float right">
+
+    <button type="button" class="btn btn-success" ng-click="send()" ng-disabled="linked">Start</button>
+    <button type="button" class="btn btn-success" ng-click="send()" ng-disabled="linked">Stop</button>
+    <button type="button" class="btn btn-success" ng-click="send()" ng-disabled="linked">Goto</button>
+    <button type="button" class="btn btn-success" ng-click="send()" ng-disabled="linked">Home</button>
+<div>
+
 <div id="map"></div>
 
 <svg version="1.1" id="falcon" class='leaflet-zoom-hide' xmlns="http://www.w3.org/2000/svg"
