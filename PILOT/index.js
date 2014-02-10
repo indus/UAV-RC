@@ -1,42 +1,71 @@
 ﻿'use strict'
 
-define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, socketIO) {
-    /// <field name="socket" type="Object">the socket.io instance</field>
-    /// <field name="signals" type="Array" elementType="String">no description</field>
-    /// <field name="slots" type="Array" elementType="String">no description</field>
-    /// <field name="id" type="String">the moduleID defined in requirejs.config index.js</field>
 
-    /// <var type="Object">the module (proxy for 'this')</var>
+
+define(['module', 'args', 'lodash', 'socket.io-client', 'geolib', 'uavModel'], function (m, args, _, socketIO, geolib, uav) {
     var self = this;
+    this.id = m.id;
 
-    this.id = m.id
     this.signals = {
-        dummyJSSignal: true,
-        dummyPYSignal: true };
-    this.slots =
-        {
-            dummyJSSlot: function (data) {
-                data.count++;
-                data.date.arrived = new Date();
-                io.emit('dummyJSSignal', data);
-            },
-            dummyJSSignal: function (data) {
-                console.log('dummyJSSignal', data);
+        debug: true,
+        COMMAND_GOTO: true,
+        POLL_GPS_DATA:true
+    };
+
+    this.slots = {
+        debug: function () {
+
+        },
+        TRACK: function (data) {
+            console.log("TRACK", data);
+            self.track = data;
+            if (self.track.autostart) {
+                self.slots.TRACK_START()
             }
-        };
 
+        },
+        TRACK_START: function () {
+            console.log("TRACK_START");
+            self.track_i = 0;
+            self.TRACK_NEXT();
+            setTimeout(self.POLL_GPS_DATA, 1000)
 
-    this.onLink = function () {
+        },
+        GPS_DATA: function (data) {
+            console.log('GPS_DATA');
+            if (geolib.getDistance(self.wpt_next, data) < 0.005) {
+                self.TRACK_NEXT()
+            }
 
-        this.emit('dummyJSSignal', 0)
-        setTimeout(function () {
-            console.log("XXX");
+        }
+    };
 
-            self.io.emit('dummyPYSlot', {})
-        }, 1000)
+    this.track;
 
+    this.TRACK_NEXT = function () {
+
+        console.log("next");
+        self.track_i++;
+        var wpt = self.track.latlngs[self.track_i];
+
+        self.wpt_next = {
+            latitude: wpt.lat,
+            longitude: wpt.lng,
+            height: 20
+        }
+        self.io.emit('COMMAND_GOTO', self.wpt_next)
     }
 
+    this.POLL_GPS_DATA = function () {
+        console.log('POLL_GPS_DATA');
+        self.io.emit('POLL_GPS_DATA')
+
+        if (true) {
+            setTimeout(function () {
+                self.POLL_GPS_DATA()
+            }, 10)
+        }
+    }
 
 
     this.io = socketIO.connect(args.url, {
@@ -63,7 +92,6 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
 
         io.emit('link', moduleDesc, self.onLink)
     });
-
 
     //Fired upon a succesful connection.
     io.on('connect_failed', function (err, xhr, reconnecting) {
@@ -107,8 +135,6 @@ define(['module', 'args', 'lodash', 'socket.io-client'], function (m, args, _, s
         console.log("reconnect_failed");
     });
 
-
     return this;
+
 });
-
-

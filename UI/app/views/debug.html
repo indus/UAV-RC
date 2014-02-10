@@ -1,0 +1,15 @@
+﻿<div class="container" style="width:300px;padding-top:100px">
+    <form>
+        <div class="form-group">
+            <label for="signalInput">signal</label>
+            <input class="form-control" id="signalInput" placeholder="signal" ng-model="signal">
+        </div>
+        <div class="form-group">
+            <label for="dataTextarea">data</label>
+            <textarea id="dataTextarea" class="form-control" rows="3" name="data" placeholder="json" ng-model="dataString" ng-change="dataChange()"></textarea>
+            <pre>{{ data | json }}</pre>
+
+        </div>
+        <button type="button" class="btn btn-warning" ng-disabled="!linked || !signal" ng-click="emit()">Emit</button>
+</form>
+</div>

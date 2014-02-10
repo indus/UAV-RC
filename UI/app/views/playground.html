@@ -1,4 +1,4 @@
-﻿<div class="input-group">
+﻿<!--<div class="input-group">
     <span class="input-group-addon">latitude</span>
     <input type="text" class="form-control" placeholder="°" ng-model="goto.latitude">
 </div>
@@ -11,4 +11,16 @@
     <input type="text" class="form-control" placeholder="m" ng-model="goto.height">
 </div>
 <button type="button" class="btn btn-success" ng-click="send()" ng-disabled="!linked">Send</button>
-<p>{{GPS_DATA}}</p>
+<p>{{GPS_DATA}}</p>-->
+<div class="container" style="width:300px;padding-top:100px">
+    <form>
+
+        <div class="input-group" style="padding-bottom:10px">
+            <span class="input-group-addon">pitchangle</span>
+            <input type="text" class="form-control" placeholder="°" ng-model="pitchangle">
+        </div>
+
+        <button type="button" class="btn btn-success" ng-click="set_pitchangle()" ng-disabled="!linked">set</button>
+        <button type="button" class="btn btn-primary" ng-click="get_pitchangle()" ng-disabled="!linked">get</button>
+    </form>
+</div>

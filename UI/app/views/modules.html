@@ -1,0 +1,15 @@
+﻿<div class="container" style="width:300px;padding-top:100px">
+    <form>
+
+        <div class="btn-group" ng-class="{open:signalbtn.open}">
+            <button type="button" class="btn" ng-class="{'btn-primary':!!signalbtn.signal}" ng-disabled="!signalbtn.signal" ng-click="emit()">{{{true:signalbtn.signal,false:"Action"}[!!signalbtn.signal]}}</button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-click="signalbtn.open =!signalbtn.open">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li ng-repeat="(key, value) in signals"><a ng-click="signalbtn.open = false;signalbtn.signal=key;">{{key}}</a></li>
+            </ul>
+        </div>
+    </form>
+</div>

@@ -32,7 +32,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
         var modulePath = config.paths[name] || name;
 
-        var moduleType = modulePath.replace(/^(?:\.\.\/)+/, "").match(/\.[^.]+$/) || "js"
+        var moduleType = modulePath.replace(/^(?:\.\.\/)+/, "").split(".")[1] || "js"
 
         switch (moduleType) {
             case "py":
@@ -71,6 +71,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
     }
 
     this.loadModuleJS = function (name, req, onload, config, moduleConfig) {
+        console.log("JS");
         req([name], function (module) {
             assert(module, name + " - Module is undefined!");
             onload && onload(module);
@@ -87,18 +88,18 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             self.express = express();
             // TODO make Web-Server module
             self.server = http.createServer(self.express);
-            self.express.use('/', express.static('C:\\Users\\Stefan\\Documents\\dev\\UAV-RC\\UI\\app'));   
+            self.express.use('/', express.static('C:\\Users\\Stefan\\Documents\\dev\\UAV-RC\\UI\\app'));
             console.log(args.port, args.host, args.__dirname);
             self.server.listen(args.port, args.host);
-            self.io = io.listen(self.server, {}); //  configIO.core.opt
+            self.io = io.listen(self.server, {}/*{'log level':0}*/); //  configIO.core.opt
 
             // without express
             // var core = io.listen(80);
 
             var onConnection = function (socket) {
-                socket.on('link', function (moduleDesc, callbackFn) {
-                    console.log("link", moduleDesc);
 
+
+                socket.on('link', function (moduleDesc, callbackFn) {
                     var module = self.modules[moduleDesc.id] = self.modules[moduleDesc.id] || {};
                     module.id = moduleDesc.id;
                     module.slots = moduleDesc.slots;
@@ -113,11 +114,23 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                     })
 
                     _.each(module.signals, function (signal) {
-                        socket.on(signal, function (data) {
+                        socket.on(signal, function (data, callback) {
+                            console.log(arguments[1]);
+                            /*if (callback) {
+                                callback("im the server");
+                            }*/
+                            var obj = {data:data,callback:callback}
                             //assert(arguments.length == 1, module.id + " - too much parameters in signal '" + signal + "'");
-                            self.io.sockets.in(signal).emit(signal, data)
+                            self.io.sockets.in(signal).emit(signal, arguments)
                         })
                     })
+                    var test = function () { console.log("CALLBACK"); }
+
+                    socket.on("debug", function (data) {
+                        self.io.sockets.in(data.signal).emit(data.signal, data.data);
+                    })
+
+
 
                     if (_.isFunction(callbackFn))
                         callbackFn();
@@ -129,7 +142,13 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 })
 
             };
+
+            var modules = function (socket) {
+                console.log("XXX");
+                socket.emit("modules","test")
+            }
             self.io.sockets.on('connection', onConnection);
+            self.io.sockets.on('modules', modules);
             onload();
         })
     }

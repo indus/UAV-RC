@@ -1,5 +1,10 @@
 ﻿'use strict';
 
+require('stdio')
+
+//var config = require('../config.json');
+
+
 var args = require('stdio').getopt({
     'module': {
         key: 'm',
@@ -19,7 +24,7 @@ var args = require('stdio').getopt({
     }
 });
 
-args.host = args.host || 'localhost';
+args.host = args.host || 'localhost';// 'localhost'; //'192.168.1.35'||
 args.port = args.port || 8080;
 args.url = 'http://' + args.host + ':' + args.port;
 args.module = args.module ? args.module.split(",") : null;
@@ -27,6 +32,9 @@ args.__dirname = __dirname;
 
 var requirejs = require('requirejs');
 requirejs.define('args', function () { return args });
+
+
+
 
 requirejs.config({
     baseUrl: __dirname,
@@ -37,16 +45,21 @@ requirejs.config({
         dummyJSModule: 'src/dummy/dummyJS',
         dummyPYModule: 'src/dummy/dummyPY.py',
         Simulator: '../SIMULATOR/index',
+        Pilot: '../PILOT/index',
         // TODO: combine to one 'gsap' dependancy
         gsapTweenLite: '../SIMULATOR/src/gsap.nodemod/TweenLite',
         gsap: '../SIMULATOR/src/gsap.nodemod/plugins/ThrowPropsPlugin.hacked', // greensock membership ($99/year)
         uavModel: '../SIMULATOR/src/uavModel'
     },
     config: {
+        dummyJSModule:{
+            foo:"bar"
+        }
+
     }
 })
 
-var requireModules = args.module || ['io!', 'io!Simulator']; //
+var requireModules = args.module || ['io!', 'io!Simulator', 'io!dummyJSModule']; //, 'io!Pilot' //, 'io!dummyPYModule'
 
 
 requirejs(requireModules, function () {

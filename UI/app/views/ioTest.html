@@ -1,0 +1,52 @@
+﻿
+<div class="container" style="margin-top:30px">
+
+    <form role="form-horizontal">
+        <h3>Socket.io Test</h3>
+        <p>
+            <span class="label" ng-class="{'label-success':socket.connected,'label-warn':!linkedd}">Socket.io is {{{false:'connecting',true:'connected'}[socket.connected]}}</span>
+        </p>
+        <p>
+            The purpose of this page is to test the socket.io network for three scenarios:
+        </p>
+        <ul>
+            <li>sending/receiving a message to/from a <strong>JavaScript</strong>-module</li>
+            <li>sending/receiving a message to/from a <strong>Python</strong>-module</li>
+            <li>sending/receiving a message to/from <strong>itself</strong> (the controller of this page; taking a roundabout route over the server)</li>
+        </ul>
+        <p>
+            Clicking on "send" emits a message to the corresponding module via socket.io. The message has a date property that holds 3 timestamps (when the message was "send", has "arrived" at the module and was "recieved" back at the controller of this page). The message also has a "count" property that is incremented by the module (as a proxy for real work).<br>
+            Checking the "repeat" checkbox will refire a message to the module after receiving a answer from the module (uncheck it to stop the loop).
+        </p>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary  btn-xs" id="btnDummyJS" ng-click="sendDummyJS()" ng-disabled="!linked">{{{false:'send',true:'start'}[repeat]}}</button>
+
+            <label for="btnDummyJS">a message to dummyJS</label>
+            <span class="label label-default">{{dummyJSSignalTime}}</span>
+            <code>
+                {{dummyJSSignal}}
+            </code>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary  btn-xs" id="btnDummyPY" ng-click="sendDummyPY()" ng-disabled="!linked">{{{false:'send',true:'start'}[repeat]}}</button>
+            <label for="btnDummyPY">a message to dummyPY</label>
+            <span class="label label-default">{{dummyPYSignalTime}}</span>
+            <code>
+                {{dummyPYSignal}}
+            </code>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary  btn-xs" id="btnSelf" ng-click="sendSelf()" ng-disabled="!linked">{{{false:'send',true:'start'}[repeat]}}</button>
+            <label for="btnSelf">a message to self</label>
+            <span class="label label-default">{{dummySELFSignalTime}}</span>
+            <code>
+                {{dummySELFSignal}}
+            </code>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" ng-model="repeat" ng-init="repeat=false">repeat
+            </label>
+        </div>
+    </form>
+</div>

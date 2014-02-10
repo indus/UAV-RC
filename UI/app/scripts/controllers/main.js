@@ -69,6 +69,14 @@ angular.module('uavRcApp')
               layer = e.layer;
 
           if (type === 'polyline') {
+
+              var track = {
+                  autostart: true,
+                  latlngs: layer.getLatLngs()
+              }
+
+              //socket.emit('TRACK', track);
+              
               flightTrack = layer.getLatLngs();
               i = 0;
               gotoNext()

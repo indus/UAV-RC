@@ -54,12 +54,19 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
         CONTROLLER_OUTPUT: true,
         current_way: true,
         CAM_Data: true,
-        POLL: true
+        POLL: true,
+        CAM_PITCHANGLE:true,
     };
 
     this.slots = {
         _debug: function (data) {
             console.log('debug', (arguments.length - 1) ? arguments : data);
+        },
+        CAM_GET_PITCHANGLE: function () {
+            self.pichangle
+        },
+        CAM_SET_PITCHANGLE: function (data) {
+            self.pichangle
         },
         COMMAND_GOTO: function (goto) {
             var distance = geolib.getDistance(uav.GPS_DATA, goto); // meter
@@ -111,7 +118,7 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
            self.io.emit('IMU_CALCDATA', uav.IMU_CALCDATA)
         },
         POLL_GPS_DATA: function () {
-           self.io.emit('GPS_DATA', uav.GPS_DATA)
+            self.io.emit('GPS_DATA', _.omit(uav.GPS_DATA, '_gsTweenID'))
         },
         POLL_GPS_DATA_ADVANCED: function () {
            self.io.emit('GPS_DATA_ADVANCED', uav.GPS_DATA_ADVANCED)
@@ -214,7 +221,6 @@ define(['module', 'args', 'lodash', 'socket.io-client', 'gsap', 'geolib', 'uavMo
 
         io.emit('link', moduleDesc, self.onLink)
     });
-
 
     //Fired upon a succesful connection.
     io.on('connect_failed', function (err, xhr, reconnecting) {

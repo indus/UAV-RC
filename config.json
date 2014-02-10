@@ -1,0 +1,30 @@
+{
+	"globals":{
+		"socketio":{
+			"host": "localhost"
+			,"port": 8081
+		}
+	}
+	,"modules": {
+		"io":{
+			"path": "src/io"
+		}
+		,"dummyJSModule":{
+			"path": "src/dummy/dummyJS"
+		}
+		,"dummyPYModule":{
+			"path": "src/dummy/dummyPY.py"
+		}
+		,"Simulator":{
+			"path": "../SIMULATOR/index"
+		}
+		,"Pilot":{
+			"path": "../PILOT/index"
+		}
+	},
+		"dependancies":{
+		"gsapTweenLite": "../SIMULATOR/src/gsap.nodemod/TweenLite"
+		,"gsap": "../SIMULATOR/src/gsap.nodemod/plugins/ThrowPropsPlugin.hacked"
+		,"uavModel": "../SIMULATOR/src/uavModel"
+		}
+}

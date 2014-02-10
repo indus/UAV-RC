@@ -7,7 +7,7 @@ angular.module('uavRcApp', [
   'leaflet-directive'*/ //TODO: delete from bower_components (and never try again)
 ]).
 factory('socket', function (socketFactory) {
-    var ioSocket = io.connect(window.location.port ? 'http://localhost:8080' : '');
+    var ioSocket = io.connect('http://localhost:8080'||'http://192.168.1.35:8080'); //  || window.location.port ? 'http://localhost:8080' : ''
 
 
 
@@ -26,6 +26,18 @@ factory('socket', function (socketFactory) {
             templateUrl: 'views/playground.html',
             controller: 'PlaygroundCtrl'
         })
+        .when('/ioTest', {
+            templateUrl: 'views/ioTest.html',
+            controller: 'IoTestCtrl'
+        })
+        .when('/modules', {
+            templateUrl: 'views/modules.html',
+            controller: 'ModulesCtrl'
+        })
+        .when('/debug', {
+            templateUrl: 'views/debug.html',
+            controller: 'DebugCtrl'
+        })
         .otherwise({
             redirectTo: '/'
         });
@@ -43,14 +55,31 @@ factory('socket', function (socketFactory) {
     var self = {
         id: 'UI',
         signals: {
+            CAM_SET_PITCHANGLE: true,
             COMMAND_GOTO: true,
-            _SET: true
+            GPS_DATA: true,
+            _SET: true,
+            TRACK: true,
+            dummyJSSlot: true,
+            dummyPYSlot: true,
+            dummySELFSlot: true,
+            dummySELFSignal:true,
+            CAMERA_PITCH_ANGLE_GET: true,
+            CAMERA_PITCH_ANGLE_SET: true,
+            modules:true
         },
         slots: {
-            GPS_DATA: function (data) {
+            /*GPS_DATA: function (data) {
                 $rootScope.GPS_DATA = data;
                 //console.log(data);
-            }
+            },*/
+            debug:true,
+            aaa:true,
+            dummyJSSignal: true,
+            dummyPYSlot: true,
+            dummySELFSlot: true,
+            dummySELFSignal: true,
+            CAMERA_PITCH_ANGLE: true
         }
     }
 
