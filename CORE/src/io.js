@@ -7,6 +7,8 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
     this.modules = {};
 
+    console.log(args);
+
     // loadFn to load a Module (io!someModule) http://requirejs.org/docs/plugins.html#apiload
     this.load = function (name, req, onload, config) {
 
@@ -71,7 +73,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
     }
 
     this.loadModuleJS = function (name, req, onload, config, moduleConfig) {
-        console.log("JS");
         req([name], function (module) {
             assert(module, name + " - Module is undefined!");
             onload && onload(module);
@@ -88,9 +89,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             self.express = express();
             // TODO make Web-Server module
             self.server = http.createServer(self.express);
-            self.express.use('/', express.static('C:\\Users\\Stefan\\Documents\\dev\\UAV-RC\\UI\\app'));
-            /*console.log(args.port, args.host, args.__dirname);
-            console.log(args.host);*/
+            self.express.use('/', express.static(args.__dirname + "\\..\\UI\\app"));
             self.server.listen(args.port, args.host);
             self.io = io.listen(self.server, {}/*{'log level':0}*/); //  configIO.core.opt
 

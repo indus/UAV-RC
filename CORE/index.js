@@ -2,7 +2,8 @@
 
 require('stdio')
 
-//var config = require('../config.json');
+var config = require('../config.json');
+var _ = require('lodash');
 
 var args = require('stdio').getopt({
     'module': {
@@ -19,12 +20,12 @@ var args = require('stdio').getopt({
     'port': {
         key: 'p',
         args: 1,
-        description: 'the port of the Core (default "8080")'
+        description: 'the port of the Core (default "8081")'
     }
 });
 
-args.host = args.host || 'localhost';// 'localhost'; //'192.168.1.35'||
-args.port = args.port || 8081;
+args.host = args.host || config.globals.host || 'localhost';
+args.port = args.port || config.globals.port || 8081;
 args.url = 'http://' + args.host + ':' + args.port;
 args.module = args.module ? args.module.split(",") : null;
 args.__dirname = __dirname;
@@ -32,27 +33,22 @@ args.__dirname = __dirname;
 var requirejs = require('requirejs');
 requirejs.define('args', function () { return args });
 
+
+var reqjsPaths = _.reduce(config.modules, function (result, val, key) {
+    result[key] = val.path;
+    return result;
+}, _.clone(config.dependancies));
+
+var reqjsConfig = _.reduce(config.modules, function (result, val, key) {
+    result[key] = _.omit(val,"path");
+    return result;
+}, {});
+
 requirejs.config({
     baseUrl: __dirname,
     nodeRequire: require,
-    paths: {
-        //coreConfig: 'src/coreConfig',
-        io: 'src/io',
-        dummyJSModule: 'src/dummy/dummyJS',
-        dummyPYModule: 'src/dummy/dummyPY.py',
-        Simulator: '../SIMULATOR/index',
-        Pilot: '../PILOT/index',
-        // TODO: combine to one 'gsap' dependancy
-        gsapTweenLite: '../SIMULATOR/src/gsap.nodemod/TweenLite',
-        gsap: '../SIMULATOR/src/gsap.nodemod/plugins/ThrowPropsPlugin.hacked', // greensock membership ($99/year)
-        uavModel: '../SIMULATOR/src/uavModel'
-    },
-    config: {
-        dummyJSModule:{
-            foo:"bar"
-        }
-
-    }
+    paths: reqjsPaths,
+    config: reqjsConfig
 })
 
 var requireModules = args.module || ['io!']; //, 'io!Pilot' //, 'io!dummyPYModule' //, 'io!Simulator', 'io!dummyJSModule'
