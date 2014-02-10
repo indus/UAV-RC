@@ -113,18 +113,46 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                     })
 
                     _.each(module.signals, function (signal) {
-                        socket.on(signal, function (msg, ackFn) {
+                        socket.on(signal, function (msgReq, ackFn) {
                             if (ackFn) {
                                 var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-                                socket.once(msg.ack = ackID, ackFn);
+                                
+                                var acknolege = function (msg) {
+                                    var msg =  msg || {
+                                        "header": {
+                                            "msg": {
+                                                "id": Math.random().toString(36).substring(2, 11),
+                                                "emitter": "CORE",
+                                                "timestamp": +new Date()
+                                            },
+                                            "req": msgReq.header.msg
+                                        },
+                                        "error": {
+                                            code: 504,
+                                            description: "Gateway Time-out"
+                                        }
+                                    }
+
+                                    clearTimeout(clear);
+                                    socket.removeAllListeners(ackID);
+                                    ackFn(msg)
+                                }
+
+                                
+                                
+                                var clear = setTimeout(acknolege, moduleConfig.ackTimeout)
+
+                                
+
+                                socket.once(msgReq.ack = ackID, acknolege);
                             }
-                            self.io.sockets.in(signal).emit(signal, msg)
+                            self.io.sockets.in(signal).emit(signal, msgReq)
                         })
                     })
 
                     socket.on("debug", function (data) {
 
-                        self.io.sockets.in(data.signal).emit(data.signal, data.data);
+                        self.io.sockets.in(data.signal).emit(data.signal, data.msg);
                     });
 
                     if (_.isFunction(callbackFn))

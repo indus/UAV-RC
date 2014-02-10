@@ -18,15 +18,28 @@ angular.module('uavRcApp')
                   }
               },
               "body": {
-                  val: 1
+                  someValue: 1
               }
+          };
+
+          console.log("message", msg);
+
+          var callback = function (msg) {
+              console.log("callback", msg);
           }
-          socket.emit('ack', msg, function (a, b, c) { console.log("callback", a, b, c); })
+          socket.emit('ack', msg, callback)
       }
 
       socket.on('ack', function (msg) {
-          socket.emit(msg.ack, msg, function () { console.log("test"); })
-          //console.log(data);
+          var ackId = msg.ack;
+          msg.header.req = msg.header.msg;
+          msg.header.msg = {
+              "id": Math.random().toString(36).substring(2, 11),
+              "emitter": "UI",
+              "timestamp": +new Date()
+          }
+          msg.ack = true;
+          socket.emit(ackId, msg);
       })
 
       $scope.get_pitchangle = function () {

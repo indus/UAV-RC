@@ -15,7 +15,8 @@
 			"path": "src/io"
 		}
 		,"CORE":{
-			"pathStaticWebFiles":"/../UI/app"
+			"pathStaticWebFiles":"/../UI/app",
+			"ackTimeout":10000
 		}
 		,"dummyJSModule":{
 			"path": "src/dummy/dummyJS"
