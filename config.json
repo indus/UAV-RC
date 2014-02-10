@@ -15,12 +15,26 @@
 		,"dummyPYModule":{
 			"path": "src/dummy/dummyPY.py"
 		}
+        ,"dummySimplePYModule":{
+			"path": "src/dummy/dummy_simple.py"
+		}
+		,"dummyClassPYModule":{
+			"path": "src/dummy/dummy_class.py"
+		}
 		,"Simulator":{
 			"path": "../SIMULATOR/index"
 		}
 		,"Pilot":{
 			"path": "../PILOT/index"
 		}
+        ,"uav-asctec":{
+            "path" : "../UAV/asctec.py",
+            "comport" : "COM44",
+            "baudrate" : 57600,
+            "databits" : 8,
+            "stopbits" : 1,
+            "parity" : "N"
+        }
 	},
 		"dependancies":{
 		"gsapTweenLite": "../SIMULATOR/src/gsap.nodemod/TweenLite"

@@ -7,7 +7,7 @@ angular.module('uavRcApp', [
   'leaflet-directive'*/ //TODO: delete from bower_components (and never try again)
 ]).
 factory('socket', function (socketFactory) {
-    var ioSocket = io.connect('http://localhost:8080'||'http://192.168.1.35:8080'); //  || window.location.port ? 'http://localhost:8080' : ''
+    var ioSocket = io.connect('http://localhost:8081'||'http://192.168.1.35:8080'); //  || window.location.port ? 'http://localhost:8080' : ''
 
 
 
