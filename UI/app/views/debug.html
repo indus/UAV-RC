@@ -1,5 +1,6 @@
 ﻿<div class="container" style="padding-top:20px">
     <div class="row">
+
         <div class="col-md-4 col-md-offset-2">
             <form>
                 <div class="form-group">
@@ -12,7 +13,7 @@
                     <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()"></textarea>
                 </div>
                 <div class="form-group">
-                    <input type="checkbox" ng-model="ackInput"/>
+                    <input type="checkbox" ng-model="ackInput" />
                     <label for="dataTextarea">acknowledge</label>
                     <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal" ng-click="emit()">Emit</button>
                 </div>
@@ -20,6 +21,7 @@
             </form>
         </div>
         <div class="col-md-4">
+            <h1 class="right">Debug</h1>
             <div ng-repeat="i in msgs | orderBy:'timestamp':true">
                 <pre><span class="label label-warning">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span></br>{{ i.msg | json }}</br><span class="label" ng-show="i.ack" ng-class="{'label-success':i.ack.ack,'label-danger':i.ack.error}">acknowledge:</span></br>{{ i.ack | json }}</pre>
             </div>

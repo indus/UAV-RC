@@ -44,7 +44,6 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
-          console.log("XXX");
           var ackId = msg.ack;
           msg.header.req = msg.header.msg;
           msg.header.msg = {

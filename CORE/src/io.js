@@ -154,8 +154,8 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         var msgReq = data.msg;
                         if (ackFn) {
                             var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-
-                            var acknolege = function (msg) {
+                            var acknowledge = function (msg) {
+                                console.log(ackID);
                                 var msg = msg || {
                                     "header": {
                                         "msg": {
@@ -178,13 +178,13 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
 
 
-                            var clear = setTimeout(acknolege, moduleConfig.ackTimeout)
+                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout)
 
 
 
-                            socket.once(data.ack = ackID, acknolege);
+                            socket.once(msgReq.ack = ackID, acknowledge);
                         }
-                        self.io.sockets.in(data.signal).emit(data.signal, data.msg);
+                        self.io.sockets.in(data.signal).emit(data.signal, msgReq);
                     });
 
                     if (_.isFunction(callbackFn))
