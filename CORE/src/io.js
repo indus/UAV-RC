@@ -113,18 +113,19 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                     })
 
                     _.each(module.signals, function (signal) {
-                        socket.on(signal, function (data, callback) {
-                            console.log("signal");
-                            self.io.sockets.in(signal).emit(signal, arguments)
+                        socket.on(signal, function (msg, ackFn) {
+                            if (ackFn) {
+                                var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
+                                socket.once(msg.ack = ackID, ackFn);
+                            }
+                            self.io.sockets.in(signal).emit(signal, msg)
                         })
                     })
-                    var test = function () { console.log("CALLBACK"); }
 
                     socket.on("debug", function (data) {
+
                         self.io.sockets.in(data.signal).emit(data.signal, data.data);
-                    })
-
-
+                    });
 
                     if (_.isFunction(callbackFn))
                         callbackFn();
@@ -138,7 +139,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             };
 
             var modules = function (socket) {
-                socket.emit("modules","test")
+                socket.emit("modules", "test")
             }
             self.io.sockets.on('connection', onConnection);
             self.io.sockets.on('modules', modules);

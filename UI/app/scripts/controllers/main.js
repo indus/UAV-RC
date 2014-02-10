@@ -14,13 +14,16 @@ angular.module('uavRcApp')
      
 
       map.on('click', function (evt) {
+          if (!$scope.cmdGoto)
+              return;
+
           var goto = {
               latitude: evt.latlng.lat,
               longitude: evt.latlng.lng,
               height: 20
           }
 
-          //gotoNext();
+          socket.emit('COMMAND_GOTO', goto);
       })
 
       //var toolbar = L.Toolbar().addToolbar(map);
@@ -81,7 +84,6 @@ angular.module('uavRcApp')
               i = 0;
               //gotoNext();
 
-              socket.emit('debug', "test");
           }
 
           
@@ -109,6 +111,7 @@ angular.module('uavRcApp')
       uav._icon.appendChild(falcon);
       socket.forward('GPS_DATA', $scope);
       socket.forward('connect', $scope);
+      socket.forward('debug', $scope);
 
       $scope.goto = {
           latitude: 0,
@@ -147,27 +150,33 @@ angular.module('uavRcApp')
       }
 
 
-      
 
 
       $scope.send = function () {
           socket.emit('COMMAND_GOTO', $scope.goto);
       }
       $scope.$on('socket:connect', function (data) {
-
           var set = { "GPS_DATA": { "latitude": 48.084730529496646, "longitude": 11.279869079589842, "height": 0 } };
-
           socket.emit('_SET', set);
+          socket.emit("test")
+          socket.emit("test")
       })
 
+
+
       $scope.$on('socket:GPS_DATA', function (ev, data) {
+          console.log(data);
           var posCurr = L.latLng(data.latitude, data.longitude)
-          if (posCurr.distanceTo(wptNext) < 5) {
+         /* if (posCurr.distanceTo(wptNext) < 5) {
               gotoNext()
-          }
+          }*/
 
           uav.setLatLng(posCurr)
           falcon.style['-webkit-transform'] = 'rotate(' + ((180 + data.heading) % 360) + 'deg)';
+      });
+
+      $scope.$on('socket:debug', function (ev, data,callback) {
+          console.log(data, callback);
       });
 
 

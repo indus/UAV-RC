@@ -58,6 +58,7 @@ factory('socket', function (socketFactory) {
             CAM_SET_PITCHANGLE: true,
             COMMAND_GOTO: true,
             GPS_DATA: true,
+            ack: true,
             _SET: true,
             TRACK: true,
             dummyJSSlot: true,
@@ -69,9 +70,10 @@ factory('socket', function (socketFactory) {
             modules:true
         },
         slots: {
+            ack: true,
             GPS_DATA: function (data) {
-                $rootScope.GPS_DATA = data;
-                //console.log(data);
+                //$rootScope.GPS_DATA = data;
+                console.log(data);
             },
             debug:true,
             aaa:true,

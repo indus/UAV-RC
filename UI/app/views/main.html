@@ -1,10 +1,10 @@
 <div id="map"></div>
  
 <div  style="position:absolute;right:0;top:0;">
-    <button type="button" class="btn btn-success" ng-click="cmd_start()" ng-disabled="linked">Start</button>
-    <button type="button" class="btn btn-success" ng-click="cmd_stop()" ng-disabled="linked">Stop</button>
-    <button type="button" class="btn btn-success" ng-click="cmd_goto()" ng-disabled="linked">Goto</button>
-    <button type="button" class="btn btn-success" ng-click="cmd_home()" ng-disabled="linked">Home</button>
+    <button type="button" class="btn" ng-click="cmd_start()" ng-disabled="!linked">Start</button>
+    <button type="button" class="btn" ng-click="cmd_stop()" ng-disabled="!linked">Stop</button>
+    <button type="button" class="btn" ng-class="{'btn-success':cmdGoto}" ng-click="cmdGoto = !cmdGoto" ng-disabled="!linked">Goto</button>
+    <button type="button" class="btn" ng-click="cmd_home()" ng-disabled="!linked">Home</button>
 </div>
     
 <svg version="1.1" id="falcon" class='leaflet-zoom-hide' xmlns="http://www.w3.org/2000/svg"
