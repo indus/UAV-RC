@@ -4,7 +4,6 @@ require('stdio')
 
 //var config = require('../config.json');
 
-
 var args = require('stdio').getopt({
     'module': {
         key: 'm',
@@ -25,16 +24,13 @@ var args = require('stdio').getopt({
 });
 
 args.host = args.host || 'localhost';// 'localhost'; //'192.168.1.35'||
-args.port = args.port || 8080;
+args.port = args.port || 8081;
 args.url = 'http://' + args.host + ':' + args.port;
 args.module = args.module ? args.module.split(",") : null;
 args.__dirname = __dirname;
 
 var requirejs = require('requirejs');
 requirejs.define('args', function () { return args });
-
-
-
 
 requirejs.config({
     baseUrl: __dirname,
@@ -59,7 +55,7 @@ requirejs.config({
     }
 })
 
-var requireModules = args.module || ['io!', 'io!Simulator', 'io!dummyJSModule']; //, 'io!Pilot' //, 'io!dummyPYModule'
+var requireModules = args.module || ['io!']; //, 'io!Pilot' //, 'io!dummyPYModule' //, 'io!Simulator', 'io!dummyJSModule'
 
 
 requirejs(requireModules, function () {

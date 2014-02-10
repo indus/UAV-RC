@@ -89,7 +89,8 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             // TODO make Web-Server module
             self.server = http.createServer(self.express);
             self.express.use('/', express.static('C:\\Users\\Stefan\\Documents\\dev\\UAV-RC\\UI\\app'));
-            console.log(args.port, args.host, args.__dirname);
+            /*console.log(args.port, args.host, args.__dirname);
+            console.log(args.host);*/
             self.server.listen(args.port, args.host);
             self.io = io.listen(self.server, {}/*{'log level':0}*/); //  configIO.core.opt
 
@@ -144,7 +145,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             };
 
             var modules = function (socket) {
-                console.log("XXX");
                 socket.emit("modules","test")
             }
             self.io.sockets.on('connection', onConnection);

@@ -1,1 +1,0 @@
-Powershell.exe nodemon .\CORE\index.js 
