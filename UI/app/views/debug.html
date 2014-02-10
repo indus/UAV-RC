@@ -7,12 +7,12 @@
                     <input class="form-control" id="signalInput" placeholder="signal" ng-model="signal">
                 </div>
                 <div class="form-group">
-                    <label for="dataTextarea">massage</label>
+                    <label for="dataTextarea">message</label>
                     <pre>{{ msg | json }}</pre>
                     <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()"></textarea>
                 </div>
                 <div class="form-group">
-                    <input type="checkbox" />
+                    <input type="checkbox" ng-model="ackInput"/>
                     <label for="dataTextarea">acknowledge</label>
                     <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal" ng-click="emit()">Emit</button>
                 </div>
@@ -21,9 +21,7 @@
         </div>
         <div class="col-md-4">
             <div ng-repeat="i in msgs | orderBy:'timestamp':true">
-                <h4><span class="label label-warning">{{i.signal}}</span> <span class="badge pull-right">{{i.timeString}}</span></h4>
-                <pre>{{ i.msg | json }}</pre>
-                <pre>{{ i.ack | json }}</pre>
+                <pre><span class="label label-warning">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span></br>{{ i.msg | json }}</br><span class="label" ng-show="i.ack" ng-class="{'label-success':i.ack.ack,'label-danger':i.ack.error}">acknowledge:</span></br>{{ i.ack | json }}</pre>
             </div>
         </div>
     </div>

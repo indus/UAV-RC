@@ -21,9 +21,10 @@ angular.module('uavRcApp')
 
           var ack;
 
-          if (true) {
+          if ($scope.ackInput) {
               ack = function (msg) {
                   emit.ack = msg;
+                  emit.timeStringAck = new Date().toLocaleString();
               }
           }
 
@@ -39,7 +40,6 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
-          console.log("YYY");
           var ackId = msg.ack;
           msg.header.req = msg.header.msg;
           msg.header.msg = {
