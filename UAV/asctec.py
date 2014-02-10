@@ -47,11 +47,18 @@ class Asctec(object):
         self.connectionerror = False
         print "uav connect test"
         try:
-            self.ser = serial.Serial(port='COM39',
-                baudrate="57600",
-                parity="N",
-                stopbits=1,
-                bytesize=8)  
+            if (args==None):
+                self.ser = serial.Serial(port=0,
+                    baudrate=baudrate,
+                    parity=parity,
+                    stopbits=stopbits,
+                    bytesize=databits)  
+            else:
+                self.ser = serial.Serial(port=args["body"]["comport"],
+                    baudrate = (1 and [args["body"]["baudrate"]] or [baudrate])[0],
+                    parity = (1 and [args["body"]["parity"]] or [parity])[0] ,
+                stopbits = (1 and [args["body"]["stopbits"]] or [stopbits])[0],
+                bytesize = (1 and [args["body"]["databits"]] or [databits])[0] )  
             self.ser.write("hello\r\n")      # write a string
             
         except:
