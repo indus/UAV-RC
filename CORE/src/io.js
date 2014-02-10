@@ -150,8 +150,40 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         })
                     })
 
-                    socket.on("debug", function (data) {
+                    socket.on("debug", function (data, ackFn) {
+                        var msgReq = data.msg;
+                        if (ackFn) {
+                            var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
 
+                            var acknolege = function (msg) {
+                                var msg = msg || {
+                                    "header": {
+                                        "msg": {
+                                            "id": Math.random().toString(36).substring(2, 11),
+                                            "emitter": "CORE",
+                                            "timestamp": +new Date()
+                                        },
+                                        "req": msgReq.header.msg
+                                    },
+                                    "error": {
+                                        code: 504, 
+                                        description: "Gateway Time-out"
+                                    }
+                                }
+
+                                clearTimeout(clear);
+                                socket.removeAllListeners(ackID);
+                                ackFn(msg)
+                            }
+
+
+
+                            var clear = setTimeout(acknolege, moduleConfig.ackTimeout)
+
+
+
+                            socket.once(data.ack = ackID, acknolege);
+                        }
                         self.io.sockets.in(data.signal).emit(data.signal, data.msg);
                     });
 
