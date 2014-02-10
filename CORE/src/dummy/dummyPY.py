@@ -14,7 +14,7 @@ config = parser.parse_args()
 
 
 slots = ["dummyPYSlot", "GPS_DATA"]
-signals = ["dummyPYSignal"]
+signals = ["dummyPYSignal", "GPS_DATA"]
 
 def log(arg):
   if config.logLevel > 0:
@@ -29,6 +29,8 @@ def on_connect(*args):
   sys.stdout.flush()
   moduleDesc = {'id':config.id,'slots':slots,'signals':signals}
   socketIO.emit('link', moduleDesc)
+  socketIO.emit('GPS_DATA', "hallo","text")
+  
 
 from time import gmtime, strftime
 def on_dummyPYSlot(*args):
