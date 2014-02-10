@@ -1,9 +1,8 @@
 ﻿'use strict';
 
-require('stdio')
-
-var config = require('../config.json');
-var _ = require('lodash');
+var _ = require('lodash'),
+    requirejs = require('requirejs'),
+    config = require('../config.json');
 
 var args = require('stdio').getopt({
     'module': {
@@ -30,16 +29,12 @@ args.url = 'http://' + args.host + ':' + args.port;
 args.module = args.module ? args.module.split(",") : null;
 args.__dirname = __dirname;
 
-var requirejs = require('requirejs');
-requirejs.define('args', function () { return args });
-
-
-var reqjsPaths = _.reduce(config.modules, function (result, val, key) {
+var requirePaths = _.reduce(config.modules, function (result, val, key) {
     result[key] = val.path;
     return result;
 }, _.clone(config.dependancies));
 
-var reqjsConfig = _.reduce(config.modules, function (result, val, key) {
+var requireConfig = _.reduce(config.modules, function (result, val, key) {
     result[key] = _.omit(val,"path");
     return result;
 }, {});
@@ -47,12 +42,13 @@ var reqjsConfig = _.reduce(config.modules, function (result, val, key) {
 requirejs.config({
     baseUrl: __dirname,
     nodeRequire: require,
-    paths: reqjsPaths,
-    config: reqjsConfig
+    paths: requirePaths,
+    config: requireConfig
 })
 
-var requireModules = args.module || ['io!']; //, 'io!Pilot' //, 'io!dummyPYModule' //, 'io!Simulator', 'io!dummyJSModule'
+var requireModules = args.module || ['io!'];
 
+requirejs.define('args', function () { return args });
 
 requirejs(requireModules, function () {
     console.log('RUN');
