@@ -81,7 +81,7 @@ angular.module('uavRcApp')
               i = 0;
               //gotoNext();
 
-              socket.emit('debug', goto);
+              socket.emit('debug', "test");
           }
 
           
