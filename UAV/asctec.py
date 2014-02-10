@@ -54,11 +54,11 @@ class Asctec(object):
                     stopbits=stopbits,
                     bytesize=databits)  
             else:
-                self.ser = serial.Serial(port=args["body"]["comport"],
-                    baudrate = (1 and [args["body"]["baudrate"]] or [baudrate])[0],
-                    parity = (1 and [args["body"]["parity"]] or [parity])[0] ,
-                stopbits = (1 and [args["body"]["stopbits"]] or [stopbits])[0],
-                bytesize = (1 and [args["body"]["databits"]] or [databits])[0] )  
+                self.ser = serial.Serial(port= args["body"].get("comport",comport),
+                    baudrate = args["body"].get("baudrate",baudrate),
+                    parity = args["body"].get("parity",parity) ,
+                stopbits = args["body"].get("stopbits",stopbits),
+                bytesize = args["body"].get("databits",databits) ) 
             self.ser.write("hello\r\n")      # write a string
             
         except:
