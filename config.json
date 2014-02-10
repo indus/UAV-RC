@@ -1,9 +1,7 @@
 {
 	"globals":{
-		"socketio":{
-			"host": "localhost"
-			,"port": 8081
-		}
+		"host": "localhost",
+		"port": 8081
 	}
 	,"modules": {
 		"io":{
