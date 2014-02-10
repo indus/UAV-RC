@@ -79,7 +79,9 @@ angular.module('uavRcApp')
               
               flightTrack = layer.getLatLngs();
               i = 0;
-              gotoNext()
+              //gotoNext();
+
+              socket.emit('debug', goto);
           }
 
           

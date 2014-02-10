@@ -7,7 +7,7 @@ angular.module('uavRcApp', [
   'leaflet-directive'*/ //TODO: delete from bower_components (and never try again)
 ]).
 factory('socket', function (socketFactory) {
-    var ioSocket = io.connect('http://localhost:8080'||'http://192.168.1.35:8080'); //  || window.location.port ? 'http://localhost:8080' : ''
+    var ioSocket = io.connect('http://localhost:8081'); //  || window.location.port ? 'http://localhost:8080' : ''
 
 
 
@@ -69,10 +69,10 @@ factory('socket', function (socketFactory) {
             modules:true
         },
         slots: {
-            /*GPS_DATA: function (data) {
+            GPS_DATA: function (data) {
                 $rootScope.GPS_DATA = data;
                 //console.log(data);
-            },*/
+            },
             debug:true,
             aaa:true,
             dummyJSSignal: true,

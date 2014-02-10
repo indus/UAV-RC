@@ -1,11 +1,21 @@
 {
 	"globals":{
+		socketio:{
 		"host": "localhost",
 		"port": 8081
+		},
+		webserver:{
+		"host": "localhost",
+		"port": 8081
+		}
+		
 	}
 	,"modules": {
 		"io":{
 			"path": "src/io"
+		}
+		,"CORE":{
+			"pathStaticWebFiles":"/../UI/app"
 		}
 		,"dummyJSModule":{
 			"path": "src/dummy/dummyJS"
