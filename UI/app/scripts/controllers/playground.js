@@ -3,6 +3,72 @@
 angular.module('uavRcApp')
   .controller('PlaygroundCtrl', function ($scope, socket) {
 
+      $scope.doIt = function () {
+          socket.emit('ack', _.IOMessage("test"))
+      }
+      socket.on('IO_LOG', function (msg) {
+          console.log(msg);
+
+      })
+
+
+  }
+  );
+
+_.mixin({
+    'IOMessage': function (body, reqMsg, name) {
+        var msg = {
+            "header": {
+                "msg": {
+                    "id": Math.random().toString(36).substring(2, 11),
+                    "emitter": name || "UI",
+                    "timestamp": +new Date()
+                }
+            },
+            "body": body
+        }
+        reqMsg && (msg.header.req = reqMsg.header.msg);
+
+        return msg;
+    },
+    'IOError': function (error, reqMsg, name) {
+        var errorMap = {
+            '504': "Gateway Time-out",
+            '400': "Bad Request"
+        }
+
+        var msg = {
+            "header": {
+                "msg": {
+                    "id": Math.random().toString(36).substring(2, 11),
+                    "emitter": name || "UI",
+                    "timestamp": +new Date()
+                }
+            },
+            "error": {
+                code: error,
+                description: errorMap[error]
+            }
+        }
+        reqMsg && (msg.header.req = reqMsg.header.msg);
+
+        return msg;
+    },
+    'isIOMessageValid': function (msg) {
+        return !!(msg
+            && (msg.header
+            && msg.header.msg
+            && msg.header.msg.id
+            && msg.header.msg.emitter
+            && msg.header.msg.timestamp)
+            && !(msg.body && msg.error))
+    }
+})
+
+/*
+angular.module('uavRcApp')
+  .controller('PlaygroundCtrl', function ($scope, socket) {
+
       socket.forward('CAMERA_PITCH_ANGLE', $scope);
       //socket.forward('ack', $scope);
       $scope.pitchangle = 0;
@@ -57,4 +123,4 @@ angular.module('uavRcApp')
       });
 
 
-  });
+  });*/

@@ -52,7 +52,7 @@ angular.module('uavRcApp')
               "timestamp": +new Date()
           }
           msg.ack = true;
-          socket.emit(ackId, msg);
+          //socket.emit(ackId, msg);
       })
 
       $scope.msg = {

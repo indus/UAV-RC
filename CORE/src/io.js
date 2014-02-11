@@ -7,8 +7,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
     this.modules = {};
 
-    console.log(args);
-
     // loadFn to load a Module (io!someModule) http://requirejs.org/docs/plugins.html#apiload
     this.load = function (name, req, onload, config) {
 
@@ -83,14 +81,13 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
     this.init = function (name, req, onload, config, moduleConfig) {
         require(['express', 'http', 'socket.io'], function (express, http, io) {
 
-
             // with Express-Server
             self.express = express();
             // TODO make Web-Server module
             self.server = http.createServer(self.express);
             self.express.use('/', express.static(args.__dirname + moduleConfig.pathStaticWebFiles));
             self.server.listen(args.port, args.host);
-            self.io = io.listen(self.server, {}/*{'log level':0}*/);
+            self.io = io.listen(self.server, { 'log level': 0 }/*{'log level':0}*/);
 
             // without express
             // var core = io.listen(80);
@@ -98,97 +95,46 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
             var onConnection = function (socket) {
 
 
-                socket.on('link', function (moduleDesc, callbackFn) {
-                    var module = self.modules[moduleDesc.id] = self.modules[moduleDesc.id] || {};
-                    module.id = moduleDesc.id;
-                    module.slots = moduleDesc.slots;
-                    module.signals = moduleDesc.signals;
-                    //assert(!module.socket, module.id + " - looks like module allready linked")
-                    module.socket = socket;
+                socket.on('link', function (moduleDesc, callback) {
 
-                    socket.name = module.id;
+                    socket.set('id', socket.name = moduleDesc.id);
 
-                    _.each(module.slots, function (slot) {
+                    var module = self.modules[moduleDesc.id] || {};
+
+                    _.each(moduleDesc.slots, function (slot) {
                         socket.join(slot)
                     })
 
-                    _.each(module.signals, function (signal) {
-                        socket.on(signal, function (msgReq, ackFn) {
-                            if (ackFn) {
-                                var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-                                
-                                var acknolege = function (msg) {
-                                    var msg =  msg || {
-                                        "header": {
-                                            "msg": {
-                                                "id": Math.random().toString(36).substring(2, 11),
-                                                "emitter": "CORE",
-                                                "timestamp": +new Date()
-                                            },
-                                            "req": msgReq.header.msg
-                                        },
-                                        "error": {
-                                            code: 504,
-                                            description: "Gateway Time-out"
-                                        }
-                                    }
+                    _.each(moduleDesc.signals, function (signal) {
+                        socket.on(signal, function (msg, ackFn) {
 
-                                    clearTimeout(clear);
-                                    socket.removeAllListeners(ackID);
-                                    ackFn(msg)
-                                }
-
-                                
-                                
-                                var clear = setTimeout(acknolege, moduleConfig.ackTimeout)
-
-                                
-
-                                socket.once(msgReq.ack = ackID, acknolege);
+                            if (!_.isIOMessageValid(msg)) {
+                                console.error("ERROR [400]: Bad Request", msg)
+                                ackFn(_.IOError(400));
+                                return;
                             }
-                            self.io.sockets.in(signal).emit(signal, msgReq)
+
+
+                            var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
+                            var acknowledge = function (ack) {
+                                var ack = ack || _.IOError(504, msg)
+                                clearTimeout(clear);
+                                socket.removeAllListeners(ackID);
+                                ackFn(ack);
+                            }
+
+                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
+                            socket.once(msg.ack = ackID, acknowledge);
+                            self.io.sockets.in(signal).emit(signal, msg);
+                            self.io.sockets.in("IO_LOG").emit("IO_LOG", msg);
                         })
                     })
 
-                    socket.on("debug", function (data, ackFn) {
-                        var msgReq = data.msg;
-                        if (ackFn) {
-                            var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-                            var acknowledge = function (msg) {
-                                console.log(ackID);
-                                var msg = msg || {
-                                    "header": {
-                                        "msg": {
-                                            "id": Math.random().toString(36).substring(2, 11),
-                                            "emitter": "CORE",
-                                            "timestamp": +new Date()
-                                        },
-                                        "req": msgReq.header.msg
-                                    },
-                                    "error": {
-                                        code: 504, 
-                                        description: "Gateway Time-out"
-                                    }
-                                }
-
-                                clearTimeout(clear);
-                                socket.removeAllListeners(ackID);
-                                ackFn(msg)
-                            }
 
 
 
-                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout)
-
-
-
-                            socket.once(msgReq.ack = ackID, acknowledge);
-                        }
-                        self.io.sockets.in(data.signal).emit(data.signal, msgReq);
-                    });
-
-                    if (_.isFunction(callbackFn))
-                        callbackFn();
+                    if (_.isFunction(callback))
+                        callback();
 
                     if (_.isFunction(module.onload)) {
                         module.onload();
@@ -196,16 +142,141 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
                 })
 
+                socket.on("debug", function (data, ackFn) {
+                    var msg= data.msg;
+                    var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
+
+                    var acknowledge = function (ack) {
+                        var ack = ack || _.IOError(504, msg)
+                        clearTimeout(clear);
+                        socket.removeAllListeners(ackID);
+                        ackFn(ack);
+                    }
+
+                    var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
+                    socket.once(msg.ack = ackID, acknowledge);
+                    self.io.sockets.in(data.signal).emit(data.signal, msg);
+
+                });
+
+
+
+                var onDisconnect = function (socket) {
+                    console.log("XXX");
+                }
+
+                socket.on('disconnect', onDisconnect)
+
+
+                var getDescription = function (msg, callback) {
+                    console.log(msg);
+                    var map = {
+                        slots: _.ioDescSlots(self.io),
+                        signals: _.ioDescSignals(self.io),
+                        modules: _.ioDescModules(self.io)
+                    }
+                    callback(map)
+                }
+                socket.on('IO_GET_DESCRIPTION', getDescription)
             };
 
-            var modules = function (socket) {
-                socket.emit("modules", "test")
-            }
+            _.mixin(
+                {
+                    'ioDescModules':
+                       function (io) {
+                           return _.reduce(io.sockets.sockets, function (mapModules, socket, id) {
+                               mapModules[id] = _.ioDescModule(socket);
+                               return mapModules;
+                           }, {});
+                       },
+                    'ioDescModule':
+                       function (socket) {
+                           return {
+                               name: socket.name,
+                               slots: _.map(_.keys(socket.manager.roomClients[socket.id]), function (roomName) { return roomName.substring(1) }),
+                               signals: _.keys(socket._events),
+                               connected: !socket.disconnected
+                           };
+                       },
+                    'ioDescSignals':
+                        function (io) {
+                            return _.reduce(self.io.sockets.sockets, function (mapSignals, socket, id) {
+                                _.each(socket._events, function (val, key) {
+                                    mapSignals[key] = mapSignals[key] || [];
+                                    mapSignals[key].push(socket.id)
+                                })
+                                return mapSignals;
+                            }, {})
+                        },
+                    'ioDescSlots':
+                        function (io) {
+                            return _.reduce(self.io.sockets.manager.rooms, function (mapSlots, slotMemebers, slotName) {
+                                mapSlots[slotName.substring(1)] = slotMemebers
+                                return mapSlots;
+                            }, {})
+                        }
+                }
+            );
+
+
+
+
             self.io.sockets.on('connection', onConnection);
-            self.io.sockets.on('modules', modules);
+            //socket.on('message', function (message, callback) { })
+
             onload();
         })
     }
+
+    _.mixin({
+        'IOMessage': function (body, reqMsg, name) {
+            var msg = {
+                "header": {
+                    "msg": {
+                        "id": Math.random().toString(36).substring(2, 11),
+                        "emitter": name || "UI",
+                        "timestamp": +new Date()
+                    }
+                },
+                "body": body
+            }
+            reqMsg && (msg.header.req = reqMsg.header.msg);
+
+            return msg;
+        },
+        'IOError': function (error, reqMsg, name) {
+            var errorMap = {
+                '504': "Gateway Time-out",
+                '400': "Bad Request"
+            }
+
+            var msg = {
+                "header": {
+                    "msg": {
+                        "id": Math.random().toString(36).substring(2, 11),
+                        "emitter": name || "UI",
+                        "timestamp": +new Date()
+                    }
+                },
+                "error": {
+                    code: error,
+                    description: errorMap[error]
+                }
+            }
+            reqMsg && (msg.header.req = reqMsg.header.msg);
+
+            return msg;
+        },
+        'isIOMessageValid': function (msg) {
+            return !!(msg
+                && (msg.header
+                && msg.header.msg
+                && msg.header.msg.id
+                && msg.header.msg.emitter
+                && msg.header.msg.timestamp)
+                && !(msg.body && msg.error))
+        }
+    })
 
     return this;
 });
