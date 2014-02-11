@@ -105,6 +105,8 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         socket.join(slot)
                     })
 
+
+
                     _.each(moduleDesc.signals, function (signal) {
                         socket.on(signal, function (msg, ackFn) {
 
@@ -120,6 +122,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                                 var ack = ack || _.IOError(504, msg)
                                 clearTimeout(clear);
                                 socket.removeAllListeners(ackID);
+                                //self.io.sockets.in("IO_LOG").emit("IO_LOG", ack);
                                 ackFn(ack);
                             }
 
@@ -143,21 +146,10 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 })
 
                 socket.on("debug", function (data, ackFn) {
-                    var msg= data.msg;
-                    var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-
-                    var acknowledge = function (ack) {
-                        var ack = ack || _.IOError(504, msg)
-                        clearTimeout(clear);
-                        socket.removeAllListeners(ackID);
-                        ackFn(ack);
-                    }
-
-                    var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
-                    socket.once(msg.ack = ackID, acknowledge);
-                    self.io.sockets.in(data.signal).emit(data.signal, msg);
-
+                    socket.$emit(data.signal, data.msg, ackFn)
                 });
+
+
 
 
 
@@ -169,7 +161,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
 
                 var getDescription = function (msg, callback) {
-                    console.log(msg);
                     var map = {
                         slots: _.ioDescSlots(self.io),
                         signals: _.ioDescSignals(self.io),
