@@ -4,6 +4,13 @@ angular.module('uavRcApp')
   .controller('DebugCtrl', function ($scope, socket, $timeout) {
       $scope.signal = "ack"
       $scope.msgs = [];
+      $scope.log = [];
+
+      socket.on('IO_LOG', function (msg) {
+          console.log("test");
+          $scope.log.push(msg)
+
+      })
 
       $scope.emit = function () {
 
@@ -23,7 +30,6 @@ angular.module('uavRcApp')
 
           if ($scope.ackInput) {
               ack = function (msg) {
-                  console.log("test",msg);
                   emit.ack = msg;
                   emit.timeStringAck = new Date().toLocaleString();
               }
@@ -44,6 +50,7 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
+          console.log("test2");
           var ackId = msg.ack;
           msg.header.req = msg.header.msg;
           msg.header.msg = {

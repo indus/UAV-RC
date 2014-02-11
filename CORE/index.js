@@ -46,7 +46,7 @@ requirejs.config({
     config: requireConfig
 })
 
-var requireModules = args.module || ['io!', 'io!Simulator'];
+var requireModules = args.module || ['io!']; //, 'io!Simulator'
 
 requirejs.define('args', function () { return args });
 

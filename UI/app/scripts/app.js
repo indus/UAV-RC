@@ -66,8 +66,7 @@ factory('socket', function (socketFactory) {
             dummySELFSlot: true,
             dummySELFSignal:true,
             CAMERA_PITCH_ANGLE_GET: true,
-            CAMERA_PITCH_ANGLE_SET: true,
-            modules:true
+            CAMERA_PITCH_ANGLE_SET: true
         },
         slots: {
             ack: true,
@@ -81,7 +80,8 @@ factory('socket', function (socketFactory) {
             dummyPYSlot: true,
             dummySELFSlot: true,
             dummySELFSignal: true,
-            CAMERA_PITCH_ANGLE: true
+            CAMERA_PITCH_ANGLE: true,
+            IO_LOG: true
         }
     }
 
