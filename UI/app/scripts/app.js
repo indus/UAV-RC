@@ -55,10 +55,10 @@ factory('socket', function (socketFactory) {
     var self = {
         id: 'UI',
         signals: {
+            ack: true,
             CAM_SET_PITCHANGLE: true,
             COMMAND_GOTO: true,
             GPS_DATA: true,
-            ack: true,
             _SET: true,
             TRACK: true,
             dummyJSSlot: true,
@@ -69,13 +69,13 @@ factory('socket', function (socketFactory) {
             CAMERA_PITCH_ANGLE_SET: true
         },
         slots: {
+            debug: true,
             ack: true,
+            errorack: true,
             GPS_DATA: function (data) {
                 //$rootScope.GPS_DATA = data;
                 console.log(data);
             },
-            debug:true,
-            aaa:true,
             dummyJSSignal: true,
             dummyPYSlot: true,
             dummySELFSlot: true,

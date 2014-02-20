@@ -7,13 +7,11 @@ angular.module('uavRcApp')
       $scope.log = [];
 
       socket.on('IO_LOG', function (msg) {
-          console.log("test");
           $scope.log.push(msg)
 
       })
 
       $scope.emit = function () {
-
           var msg = angular.copy($scope.msg);
 
           var emit = {
@@ -28,7 +26,7 @@ angular.module('uavRcApp')
 
           var ack;
 
-          if ($scope.ackInput) {
+          if ($scope.msg.header.ack) {
               ack = function (msg) {
                   emit.ack = msg;
                   emit.timeStringAck = new Date().toLocaleString();
@@ -50,16 +48,25 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
-          console.log("test2");
-          var ackId = msg.ack;
+          var ackId = msg.header.ack;
           msg.header.req = msg.header.msg;
           msg.header.msg = {
               "id": Math.random().toString(36).substring(2, 11),
               "emitter": "UI",
               "timestamp": +new Date()
           }
-          msg.ack = true;
+          msg.header.ack = true;
           socket.emit(ackId, msg);
+      })
+      socket.on('ackerror', function (msg) {
+          var ackId = msg.header.ack;
+          msg.header.req = msg.header.msg;
+          msg.header.msg = {
+              "id": Math.random().toString(36).substring(2, 11),
+              "emitter": "UI",
+              "timestamp": +new Date()
+          }
+          msg.headerack = true;
       })
 
       $scope.msg = {

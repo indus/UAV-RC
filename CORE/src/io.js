@@ -1,6 +1,8 @@
 ﻿'use strict';
 var assert = require('assert');
 
+
+
 define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, child_process) {
     /// <var type="Object">the module (proxy for 'this')</var>
     var self = this;
@@ -112,26 +114,39 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
                             if (!_.isIOMessageValid(msg)) {
                                 console.error("ERROR [400]: Bad Request", msg)
-                                ackFn(_.IOError(400));
+                                msg.header.ack && ackFn(_.IOError(400));
                                 return;
                             }
+                            if (msg.header.ack) {
+                                var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
+                                var acknowledge = function (ack) {
+                                    var ack = ack || _.IOError(504, msg);
+                                    clearTimeout(clear);
+                                    socket.removeAllListeners(ackID);
+                                    ackFn(ack);
+                                }
 
+                                var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
+                                socket.once(msg.header.ack = ackID, acknowledge);
 
-                            var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-                            var acknowledge = function (ack) {
-                                var ack = ack || _.IOError(504, msg)
-                                clearTimeout(clear);
-                                socket.removeAllListeners(ackID);
-                                //self.io.sockets.in("IO_LOG").emit("IO_LOG", ack);
-                                ackFn(ack);
                             }
 
-                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
-                            socket.once(msg.ack = ackID, acknowledge);
+                            
+
+
                             self.io.sockets.in(signal).emit(signal, msg);
                             self.io.sockets.in("IO_LOG").emit("IO_LOG", msg);
                         })
                     })
+
+                    /*socket.on('message', function () {
+                        console.log('test');
+                    });*/
+
+
+                    socket.onMessage = function () {
+                        console.log('test');
+                    }
 
 
 
@@ -154,7 +169,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
 
                 var onDisconnect = function (socket) {
-                    console.log("XXX");
+
                 }
 
                 socket.on('disconnect', onDisconnect)

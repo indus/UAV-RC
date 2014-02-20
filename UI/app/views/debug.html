@@ -13,7 +13,7 @@
                     <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()"></textarea>
                 </div>
                 <div class="form-group">
-                    <input type="checkbox" ng-model="ackInput" />
+                    <input type="checkbox" ng-model="msg.header.ack" ng-init="msg.header.ack=false" />
                     <label for="dataTextarea">acknowledge</label>
                     <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal" ng-click="emit()">Emit</button>
                 </div>
