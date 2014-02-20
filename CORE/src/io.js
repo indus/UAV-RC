@@ -111,6 +111,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         msg = arguments[1],
                         ackFn = arguments[2];
 
+
                         if (!_.isIOMessageValid(msg)) {
                             console.error("ERROR [400]: Bad Request", msg)
                             ackFn && ackFn(_.IOError(400));
@@ -164,6 +165,20 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                     _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
                     })
+                    if (msg.header.ack)
+                        ackFn();
+                    /*if (_.isFunction(module.onload)) {
+                        module.onload();
+                    }*/
+                });
+
+                socket.on('CORE_SL_SLOTS_GET', function (msg, ackFn) {
+                    socket.set('id', socket.name = msg.header.msg.emitter);
+                    socket.removeAllListeners();
+                    var module = self.modules[socket.name] || {};
+                    _.each(msg.body.slots, function (slot) {
+                        socket.join(slot)
+                    })
                     if (_.isFunction(ackFn))
                         ackFn();
                     if (_.isFunction(module.onload)) {
@@ -173,7 +188,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
 
                 socket.on('ACK', function (msg) {
-                    var ackID = msg.header.ack;
+                    var ackID = msg.body.ack;
                     var ackFn = ackCache[ackID]
                     _.isFunction(ackFn) && ackFn(msg);
                     delete ackCache[ackID];

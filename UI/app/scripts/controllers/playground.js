@@ -16,14 +16,15 @@ angular.module('uavRcApp')
   );
 
 _.mixin({
-    'IOMessage': function (body, reqMsg, name) {
+    'IOMessage': function (body, reqMsg, name,ack) {
         var msg = {
             "header": {
                 "msg": {
                     "id": Math.random().toString(36).substring(2, 11),
                     "emitter": name || "UI",
                     "timestamp": +new Date()
-                }
+                },
+                "ack":ack
             },
             "body": body
         }
