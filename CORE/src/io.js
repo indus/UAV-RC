@@ -157,15 +157,15 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 });
 
 
-                socket.on('CORE_SL_SLOTS_SET', function (msg,ackFn) {
+                socket.on('CORE_SL_SLOTS_SET', function (msg, ackFn) {
                     socket.set('id', socket.name = msg.header.msg.emitter);
                     socket.removeAllListeners();
                     var module = self.modules[socket.name] || {};
                     _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
                     })
-                    if (_.isFunction(callback))
-                        callback();
+                    if (_.isFunction(ackFn))
+                        ackFn();
                     if (_.isFunction(module.onload)) {
                         module.onload();
                     }

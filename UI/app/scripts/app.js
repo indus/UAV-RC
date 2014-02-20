@@ -76,7 +76,7 @@ factory('socket', function (socketFactory) {
         }
         var msg = _.IOMessage(moduleDesc)
 
-        socket.emit('CORE_SL_SOCKETS_SET', msg, onLink)
+        socket.emit('CORE_SL_SLOTS_SET', msg, onLink)
     });
 
     /*_.each(self.slots, function (fn, slot) {
