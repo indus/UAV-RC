@@ -100,7 +100,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 (function () {
                     var emit = socket.emit;
                     socket.emit = function () {
-                        console.log('test2', arguments[0]);
+                        //console.log('test2', arguments[0]);
                         //console.log('***', 'emit', Array.prototype.slice.call(arguments));
                         emit.apply(socket, arguments);
                     };
@@ -118,13 +118,14 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                             return;
                         }
 
-
-                        $emit.apply(socket, arguments)
+                        console.log($emit.apply(socket, arguments));
+                        
 
 
                         if (msg.header.ack) {
                             var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
                             var acknowledge = function (ack) {
+                                console.log('acknowledge');
                                 var ack = ack || _.IOError(504, msg);
                                 clearTimeout(acknowledge.clear);
                                 ackFn(ack);
@@ -143,24 +144,10 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 })();
 
 
-                socket.on('link', function (msg, callback) {
-                    socket.set('id', socket.name = msg.header.msg.id);
-                    var module = self.modules[msg.header.msg.id] || {};
-                    _.each(msg.body.slots, function (slot) {
-                        socket.join(slot)
-                    })
-                    if (_.isFunction(callback))
-                        callback();
-                    if (_.isFunction(module.onload)) {
-                        module.onload();
-                    }
-                    return false;
-                });
-
-
                 socket.on('CORE_SL_SLOTS_SET', function (msg, ackFn) {
+
+                    console.log('CORE_SL_SLOTS_SET msg-body:', msg.body);
                     socket.set('id', socket.name = msg.header.msg.emitter);
-                    socket.removeAllListeners();
                     var module = self.modules[socket.name] || {};
                     _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
@@ -174,7 +161,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
                 socket.on('CORE_SL_SLOTS_GET', function (msg, ackFn) {
                     socket.set('id', socket.name = msg.header.msg.emitter);
-                    socket.removeAllListeners();
                     var module = self.modules[socket.name] || {};
                     _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
@@ -187,7 +173,9 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 });
 
 
-                socket.on('ACK', function (msg) {
+                socket.on('ACK', function (msg, ackFn) {
+                    console.log('test');
+                    console.log('ACK msg-body:', msg.body);
                     var ackID = msg.body.ack;
                     var ackFn = ackCache[ackID]
                     _.isFunction(ackFn) && ackFn(msg);

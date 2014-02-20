@@ -56,6 +56,10 @@ angular.module('uavRcApp')
               "emitter": "UI",
               "timestamp": +new Date()
           }
+          msg.body = {
+              ack: msg.header.ack
+          }
+          msg.header.ack = false;
           console.log(msg);
           socket.emit('ACK', msg);
       })
