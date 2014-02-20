@@ -110,7 +110,6 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         signal = arguments[0],
                         msg = arguments[1],
                         ackFn = arguments[2];
-                        console.log(signal, msg);
 
                         if (!_.isIOMessageValid(msg)) {
                             console.error("ERROR [400]: Bad Request", msg)
@@ -136,7 +135,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                             //socket.once(msg.header.ack = ackID, acknowledge);
 
                         }
-
+                         
                         self.io.sockets.in(signal).emit(signal, msg);
                         self.io.sockets.in("IO_LOG").emit("IO_LOG", msg);
                     };
@@ -158,9 +157,10 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                 });
 
 
-                socket.on('CORE_SL_SOCKETS_SET', function (msg, callback) {
-                    socket.set('id', socket.name = msg.header.msg.id);
-                    var module = self.modules[msg.header.msg.id] || {};
+                socket.on('CORE_SL_SLOTS_SET', function (msg,ackFn) {
+                    socket.set('id', socket.name = msg.header.msg.emitter);
+                    socket.removeAllListeners();
+                    var module = self.modules[socket.name] || {};
                     _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
                     })
