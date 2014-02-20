@@ -125,13 +125,13 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                             var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
                             var acknowledge = function (ack) {
                                 var ack = ack || _.IOError(504, msg);
-                                clearTimeout(clear);
+                                clearTimeout(acknowledge.clear);
                                 ackFn(ack);
                                 delete ackCache[ackID];
                             }
                             msg.header.ack = ackID;
                             ackCache[ackID] = acknowledge
-                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
+                            acknowledge.clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
                             //socket.once(msg.header.ack = ackID, acknowledge);
 
                         }
