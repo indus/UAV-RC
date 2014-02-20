@@ -23,13 +23,13 @@
         <div class="col-md-3">
             <h1 class="right">EMITS</h1>
             <div ng-repeat="i in msgs | orderBy:'timestamp':true">
-                <pre><span class="label label-warning">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span></br>{{ i.msg | json }}</br><span class="label" ng-show="i.ack" ng-class="{'label-success':i.ack.ack,'label-danger':i.ack.error}">acknowledge:</span></br>{{ i.ack | json }}</pre>
+                <pre><span class="label label-warning">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span></br>{{ i.msg | json }}</br><span class="label" ng-show="i.ack" ng-class="{'label-success':i.ack.header.ack,'label-danger':i.ack.error}">acknowledge:</span></br>{{ i.ack | json }}</pre>
             </div>
-        </div>
-        <div class="col-md-3">
-            <h1 class="right">LOG</h1>
-            <div ng-repeat="msg in log | orderBy:'header.msg.timestamp':true">
-                <pre>{{ msg | json }}</span>
-        </div>
-    </div>
-</div>
+                </div>
+                <div class="col-md-3">
+                    <h1 class="right">LOG</h1>
+                    <div ng-repeat="msg in log | orderBy:'header.msg.timestamp':true">
+                        <pre>{{ msg | json }}</span>
+                    </div>
+                </div>
+            </div>

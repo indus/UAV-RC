@@ -34,11 +34,12 @@ angular.module('uavRcApp')
           }
 
           
-          var m = {
+          /*var m = {
               signal:$scope.signal,
-              msg:_.pick(emit.msg,"header","body")
-          }
-          socket.emit('debug', m, ack)
+              msg: _.pick(emit.msg, "header", "body")
+          }*/
+          //socket.emit('debug', m, ack)
+          socket.emit($scope.signal, _.pick(emit.msg,"header","body"), ack)
 
 
 
@@ -48,16 +49,17 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
-          var ackId = msg.header.ack;
+          console.log('test');
           msg.header.req = msg.header.msg;
           msg.header.msg = {
               "id": Math.random().toString(36).substring(2, 11),
               "emitter": "UI",
               "timestamp": +new Date()
           }
-          msg.header.ack = true;
-          socket.emit(ackId, msg);
+          console.log(msg);
+          socket.emit('ACK', msg);
       })
+      /*
       socket.on('ackerror', function (msg) {
           var ackId = msg.header.ack;
           msg.header.req = msg.header.msg;
@@ -67,7 +69,7 @@ angular.module('uavRcApp')
               "timestamp": +new Date()
           }
           msg.headerack = true;
-      })
+      })*/
 
       $scope.msg = {
           header: {

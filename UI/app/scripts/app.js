@@ -46,7 +46,6 @@ factory('socket', function (socketFactory) {
 }).run(function ($rootScope, socket) {
 
     var onLink = function () {
-        console.log("link");
         $rootScope.$apply(function () {
             $rootScope.linked = true;
         });
@@ -54,20 +53,6 @@ factory('socket', function (socketFactory) {
 
     var self = {
         id: 'UI',
-        signals: {
-            ack: true,
-            CAM_SET_PITCHANGLE: true,
-            COMMAND_GOTO: true,
-            GPS_DATA: true,
-            _SET: true,
-            TRACK: true,
-            dummyJSSlot: true,
-            dummyPYSlot: true,
-            dummySELFSlot: true,
-            dummySELFSignal:true,
-            CAMERA_PITCH_ANGLE_GET: true,
-            CAMERA_PITCH_ANGLE_SET: true
-        },
         slots: {
             debug: true,
             ack: true,
@@ -87,11 +72,11 @@ factory('socket', function (socketFactory) {
 
     socket.on('connect', function () {
         var moduleDesc = {
-            id: self.id,
-            signals: _.keys(self.signals),
             slots: _.keys(self.slots)
         }
-        socket.emit('link', moduleDesc, onLink)
+        var msg = _.IOMessage(moduleDesc)
+
+        socket.emit('CORE_SL_SOCKETS_SET', msg, onLink)
     });
 
     /*_.each(self.slots, function (fn, slot) {
@@ -100,3 +85,22 @@ factory('socket', function (socketFactory) {
 
 
 })
+
+
+_.mixin({
+    'IOMessage': function (body, reqMsg, name) {
+        var msg = {
+            "header": {
+                "msg": {
+                    "id": Math.random().toString(36).substring(2, 11),
+                    "emitter": name || "UI",
+                    "timestamp": +new Date()
+                }
+            },
+            "body": body
+        }
+        reqMsg && (msg.header.req = reqMsg.header.msg);
+
+        return msg;
+    }
+});

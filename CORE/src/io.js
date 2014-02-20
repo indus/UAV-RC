@@ -83,6 +83,7 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
     this.init = function (name, req, onload, config, moduleConfig) {
         require(['express', 'http', 'socket.io'], function (express, http, io) {
 
+            var ackCache = self.ackCache = {};
             // with Express-Server
             self.express = express();
             // TODO make Web-Server module
@@ -96,72 +97,86 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
 
             var onConnection = function (socket) {
 
+                (function () {
+                    var emit = socket.emit;
+                    socket.emit = function () {
+                        console.log('test2', arguments[0]);
+                        //console.log('***', 'emit', Array.prototype.slice.call(arguments));
+                        emit.apply(socket, arguments);
+                    };
+                    var $emit = socket.$emit;
+                    socket.$emit = function () {
+                        var
+                        signal = arguments[0],
+                        msg = arguments[1],
+                        ackFn = arguments[2];
+                        console.log(signal, msg);
 
-                socket.on('link', function (moduleDesc, callback) {
+                        if (!_.isIOMessageValid(msg)) {
+                            console.error("ERROR [400]: Bad Request", msg)
+                            ackFn && ackFn(_.IOError(400));
+                            return;
+                        }
 
-                    socket.set('id', socket.name = moduleDesc.id);
 
-                    var module = self.modules[moduleDesc.id] || {};
+                        $emit.apply(socket, arguments)
 
-                    _.each(moduleDesc.slots, function (slot) {
+
+                        if (msg.header.ack) {
+                            var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
+                            var acknowledge = function (ack) {
+                                var ack = ack || _.IOError(504, msg);
+                                clearTimeout(clear);
+                                ackFn(ack);
+                                delete ackCache[ackID];
+                            }
+                            msg.header.ack = ackID;
+                            ackCache[ackID] = acknowledge
+                            var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
+                            //socket.once(msg.header.ack = ackID, acknowledge);
+
+                        }
+
+                        self.io.sockets.in(signal).emit(signal, msg);
+                        self.io.sockets.in("IO_LOG").emit("IO_LOG", msg);
+                    };
+                })();
+
+
+                socket.on('link', function (msg, callback) {
+                    socket.set('id', socket.name = msg.header.msg.id);
+                    var module = self.modules[msg.header.msg.id] || {};
+                    _.each(msg.body.slots, function (slot) {
                         socket.join(slot)
                     })
-
-
-
-                    _.each(moduleDesc.signals, function (signal) {
-                        socket.on(signal, function (msg, ackFn) {
-
-                            if (!_.isIOMessageValid(msg)) {
-                                console.error("ERROR [400]: Bad Request", msg)
-                                msg.header.ack && ackFn(_.IOError(400));
-                                return;
-                            }
-                            if (msg.header.ack) {
-                                var ackID = [+new Date(), socket.name, Math.random().toString(36)].join("_");
-                                var acknowledge = function (ack) {
-                                    var ack = ack || _.IOError(504, msg);
-                                    clearTimeout(clear);
-                                    socket.removeAllListeners(ackID);
-                                    ackFn(ack);
-                                }
-
-                                var clear = setTimeout(acknowledge, moduleConfig.ackTimeout);
-                                socket.once(msg.header.ack = ackID, acknowledge);
-
-                            }
-
-                            
-
-
-                            self.io.sockets.in(signal).emit(signal, msg);
-                            self.io.sockets.in("IO_LOG").emit("IO_LOG", msg);
-                        })
-                    })
-
-                    /*socket.on('message', function () {
-                        console.log('test');
-                    });*/
-
-
-                    socket.onMessage = function () {
-                        console.log('test');
-                    }
-
-
-
-
                     if (_.isFunction(callback))
                         callback();
-
                     if (_.isFunction(module.onload)) {
                         module.onload();
                     }
+                    return false;
+                });
 
-                })
 
-                socket.on("debug", function (data, ackFn) {
-                    socket.$emit(data.signal, data.msg, ackFn)
+                socket.on('CORE_SL_SOCKETS_SET', function (msg, callback) {
+                    socket.set('id', socket.name = msg.header.msg.id);
+                    var module = self.modules[msg.header.msg.id] || {};
+                    _.each(msg.body.slots, function (slot) {
+                        socket.join(slot)
+                    })
+                    if (_.isFunction(callback))
+                        callback();
+                    if (_.isFunction(module.onload)) {
+                        module.onload();
+                    }
+                });
+
+
+                socket.on('ACK', function (msg) {
+                    var ackID = msg.header.ack;
+                    var ackFn = ackCache[ackID]
+                    _.isFunction(ackFn) && ackFn(msg);
+                    delete ackCache[ackID];
                 });
 
 
@@ -262,7 +277,8 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
                         "id": Math.random().toString(36).substring(2, 11),
                         "emitter": name || "UI",
                         "timestamp": +new Date()
-                    }
+                    },
+                    'ack':false
                 },
                 "error": {
                     code: error,
@@ -275,12 +291,11 @@ define(['module', 'args', 'lodash', 'child_process'], function (m, args, _, chil
         },
         'isIOMessageValid': function (msg) {
             return !!(msg
-                && (msg.header
+                && msg.header
                 && msg.header.msg
                 && msg.header.msg.id
                 && msg.header.msg.emitter
                 && msg.header.msg.timestamp)
-                && !(msg.body && msg.error))
         }
     })
 
