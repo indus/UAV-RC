@@ -35,6 +35,7 @@ angular.module('uavRcApp')
           }
 
 
+          console.log(msg);
           $scope.msgs.push(emit);
           $scope.msg.header.msg.id= Math.random().toString(36).substring(2, 11)
       }
@@ -42,7 +43,6 @@ angular.module('uavRcApp')
 
 
       socket.on('ack', function (msg) {
-          console.log(msg);
           if (!_.path(msg, 'header.msg.ack'))
               return;
           msg = _.ioMsg(null, null, msg);
@@ -52,7 +52,7 @@ angular.module('uavRcApp')
       socket.on('ackerror', function (msg) {
           if (!_.path(msg, 'header.msg.ack'))
               return;
-          msg = _.ioMsg("Error", null, msg);
+          msg = _.ioMsg(403, null, msg);
           socket.emit('ACK', msg);
       })
       

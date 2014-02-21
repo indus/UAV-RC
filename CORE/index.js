@@ -7,9 +7,7 @@ http = require('http'),
 express = require('express'),
 socketio = require('socket.io');
 
-
 this.config = config.modules[this.id];
-
 
 var args = {};
 args.host = args.host || config.globals.host || 'localhost';
@@ -85,12 +83,6 @@ var CORE_SL_SLOTS_SET = function (msg, ackFn) {
     this.set('id', this.name = msg.header.msg.emitter);
      */
 };
-
-
-
-
-
-
 
 var overrideEmit = function (socket) {
     console.log('overrideEmit');
