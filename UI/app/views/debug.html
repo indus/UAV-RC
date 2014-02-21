@@ -13,9 +13,9 @@
                     <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()"></textarea>
                 </div>
                 <div class="form-group">
-                    <input type="checkbox" ng-model="msg.header.ack" ng-init="msg.header.ack=false" />
+                    <input type="checkbox" ng-model="msg.header.msg.ack" ng-init="msg.header.ack=false" />
                     <label for="dataTextarea">acknowledge</label>
-                    <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal" ng-click="emit()">Emit</button>
+                    <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal || !validBody" ng-click="emit()">emit</button>
                 </div>
 
             </form>
@@ -23,13 +23,19 @@
         <div class="col-md-3">
             <h1 class="right">EMITS</h1>
             <div ng-repeat="i in msgs | orderBy:'timestamp':true">
+                <pre ng-click="collapse = ! collapse"><span class="label" ng-class="{' label-warning':!i.ack,'label-success':i.ack && i.ack.header.req.ack,'label-danger':i.ack && i.ack.error}">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span><div ng-class="{collapse:!collapse}">{{ i.msg | json }}</br><span class="label label-success" ng-show="i.ack" ng-class="{'label-danger':i.ack && i.ack.error}">acknowledge:</span><span class="badge pull-right">{{i.timeStringAck}}</span></br>{{ i.ack | json }}</div></pre>
+            </div>
+            <div ng-repeat="i in msgs | orderBy:'timestamp':true">
+                <!--
                 <pre><span class="label label-warning">{{i.signal}}</span><span class="badge pull-right">{{i.timeString}}</span></br>{{ i.msg | json }}</br><span class="label label-success" ng-show="i.ack" ng-class="{'label-danger':i.ack.error}">acknowledge:</span></br>{{ i.ack | json }}</pre>
+                   -->
             </div>
-                </div>
-                <div class="col-md-3">
-                    <h1 class="right">LOG</h1>
-                    <div ng-repeat="msg in log | orderBy:'header.msg.timestamp':true">
-                        <pre>{{ msg | json }}</span>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3">
+            <h1 class="right">LOG</h1>
+            <div ng-repeat="i in log | orderBy:'msg.header.msg.timestamp':true">
+                <pre ng-click="collapse = ! collapse"><span class="label" ng-class="{' label-warning':!i.ack,'label-success':i.ack.body,'label-danger':i.ack.error}">{{i.signal}}</span><span class="badge pull-right">{{i.msg.header.msg.emitter}}</span><div ng-class="{collapse:!collapse}">{{ i.msg | json }}</div></pre>
+
             </div>
+        </div>
+    </div>
