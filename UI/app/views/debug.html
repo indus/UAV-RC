@@ -6,12 +6,21 @@
             <form>
                 <div class="form-group">
                     <label for="signalInput">signal</label>
-                    <input class="form-control" id="signalInput" placeholder="signal" ng-model="signal">
+                    <div class="input-group">
+                        <div class="input-group-btn" ng-class="{open:dropdown}">
+                            <button type="button" class="btn btn-default dropdown-toggle" ng-click="dropdown=!dropdown"><span class="caret"></span></button>
+                            <ul class="dropdown-menu" style=" max-height: 300px; overflow-y: scroll">
+                                <li ng-repeat="p in predefinedSignals" ng-click="setPredefined(p);$parent.dropdown=false"><a>{{p.signal}}</a></li>
+                            </ul>
+                        </div>
+                        <input class="form-control" id="signalInput" placeholder="signal" ng-model="signal">
+                        
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="dataTextarea">message</label>
                     <pre>{{ msg | json }}</pre>
-                    <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()"></textarea>
+                    <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()" style="max-width: 100%;"></textarea>
                 </div>
                 <div class="form-group">
                     <input type="checkbox" ng-model="msg.header.msg.ack" ng-init="msg.header.msg.ack=false" />
