@@ -1,0 +1,15 @@
+CHANGES.rst
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+socketIO_client/__init__.py
+socketIO_client/exceptions.py
+socketIO_client/tests.py
+socketIO_client/transports.py
+socketIO_client.egg-info/PKG-INFO
+socketIO_client.egg-info/SOURCES.txt
+socketIO_client.egg-info/dependency_links.txt
+socketIO_client.egg-info/requires.txt
+socketIO_client.egg-info/top_level.txt
+socketIO_client.egg-info/zip-safe

@@ -8,57 +8,94 @@ angular.module('uavRcApp')
 
       $scope.predefinedSignals = [
           {
-              signal: "UAV_STATUS_GET", body: {}, ack: true
+              signal: "PILOT_TARGETLIST_SET", body: {
+                  id: "path1", //optional
+                  defaults: {
+                      status:0,
+                      alt: 50, // altitude in m
+                      heading: 12, // heading in deg
+                      autoStart: true, // fly to this tgt(number = delay in ms)
+                      reachedThreshold: 2.5, // position accuracy to consider a waypoint reached in m
+                      cam: {
+                          pitch: -10, // camera-pitch in deg
+                          roll: 0, // camera-roll in deg
+                          trigger: true // trigger the camera
+                      }
+                  },
+                  list: [{
+                      lat: 56.897123,
+                      lon: 11.123812,
+                      alt: 52,
+                      heading: 13,
+                      cam: {
+                          pitch: -20,
+                          roll: 0,
+                          trigger: true
+                      }
+                  }, {
+                      lat: 56.897223,
+                      lon: 11.123312
+                  }, {
+                      lat: 56.897223,
+                      lon: 11.123312,
+                      cam: {
+                          trigger: false
+                      }
+                  }]
+              }, ack: false
           },
-          {
-              signal: "UAV_GPSDATA_GET", body: {}, ack: true
-          },
-          {
-              signal: "UAV_STATUS_GET", body: {}, ack: true
-          },
-          {
-              signal: "UAV_CAM_ANGLE_GET", body: {}, ack: true
-          },
-          { signal: "UAV_ASCTEC_LL_STATUS_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_IMU_RAWDATA_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_IMU_CALCDATA_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_RC_DATA_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_CTRL_PUT_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_GPS_DATA_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_CURRENT_WAY_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_GPS_DATA_ADVANCED_GET", body: {}, ack: true },
-            { signal: "UAV_ASCTEC_CAM_DATA_GET", body: {}, ack: true },
-            { signal: "UAV_CAM_TRIGGER", body: {}, ack: true },
-            {
-                signal: "UAV_CAM_ANGLE_SET", body: {
-                    pitch: 0,
-                    roll: 0
-                }, ack: true
-            },
-            {
-                signal: "UAV_GOTO", body: {
-                    lat: 56.897123,
-                    lon: 11.123812,
-                    alt: 52, //optional
-                    heading: 13 //optional
-                }, ack: true
-            },
-            {
-                signal: "UAV_GOTOANDCAM", body: {
-                    lat: 56.897123,
-                    lon: 11.123812,
-                    alt: 52, //optional
-                    heading: 13, //optional
-                    cam: {
-                        pitch: -10, // camera-pitch in deg
-                        roll: 0, // camera-roll in deg
-                        trigger: true // trigger the camera
-                    }
-                }, ack: true
-            },
-            { signal: "UAV_START", body: {}, ack: true },
-            { signal: "UAV_STOP", body: {}, ack: true },
-            { signal: "UAV_HOME", body: {}, ack: true },
+{
+    signal: "UAV_STATUS_GET", body: {}, ack: true
+},
+{
+    signal: "UAV_GPSDATA_GET", body: {}, ack: true
+},
+{
+    signal: "UAV_STATUS_GET", body: {}, ack: true
+},
+{
+    signal: "UAV_CAM_ANGLE_GET", body: {}, ack: true
+},
+{ signal: "UAV_ASCTEC_LL_STATUS_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_IMU_RAWDATA_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_IMU_CALCDATA_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_RC_DATA_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_CTRL_PUT_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_GPS_DATA_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_CURRENT_WAY_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_GPS_DATA_ADVANCED_GET", body: {}, ack: true },
+{ signal: "UAV_ASCTEC_CAM_DATA_GET", body: {}, ack: true },
+{ signal: "UAV_CAM_TRIGGER", body: {}, ack: true },
+{
+    signal: "UAV_CAM_ANGLE_SET", body: {
+        pitch: 0,
+        roll: 0
+    }, ack: true
+},
+{
+    signal: "UAV_GOTO", body: {
+        lat: 56.897123,
+        lon: 11.123812,
+        alt: 52, //optional
+        heading: 13 //optional
+    }, ack: true
+},
+{
+    signal: "UAV_GOTOANDCAM", body: {
+        lat: 56.897123,
+        lon: 11.123812,
+        alt: 52, //optional
+        heading: 13, //optional
+        cam: {
+            pitch: -10, // camera-pitch in deg
+            roll: 0, // camera-roll in deg
+            trigger: true // trigger the camera
+        }
+    }, ack: true
+},
+{ signal: "UAV_START", body: {}, ack: true },
+{ signal: "UAV_STOP", body: {}, ack: true },
+{ signal: "UAV_HOME", body: {}, ack: true },
       ];
 
       socket.on('*', function (msg) {

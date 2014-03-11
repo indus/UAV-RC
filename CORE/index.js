@@ -24,16 +24,16 @@ server.listen(args.port, args.host);
 
 
 
-var ackCache = ackCache = {};
+
+var ackCache = io.ackCache = {};
 
 var getAckWrapper = function (ackId, ackFn) {
     var ackWrapper = function (ack) {
-        console.log('acknowledge',ack);
         clearTimeout(ackWrapper.clear);
         ackFn(ack);
         delete ackCache[ackId];
     }
-    ackCache[ackId] = ackFn;
+    ackCache[ackId] = ackWrapper;
     ackWrapper.clear = setTimeout(ackWrapper, this.config.ackTimeout, _.ioMsg(504))
 
     return ackWrapper;
@@ -41,16 +41,18 @@ var getAckWrapper = function (ackId, ackFn) {
 
 
 //// SOCKET-FNs (this = socket)
+io.emit_ = function (signal, msg) {
+    io.sockets.in(signal).emit(signal, msg);
+    io.sockets.in("*").emit("*", { signal: signal, msg: msg });
+}
 
 var EMIT = function (io, $emit, signal, msg, ackFn) {
-    console.log(msg);
     if (!_.ioValid(signal, msg)) {
         console.error("ERROR [400]: Bad Request", signal, msg)
         _.path(msg, 'header.msg.ack') && ackFn(_.ioMsg(400,null,msg))
         return;
     }
 
-    console.log(_.ioEmitter(msg), signal, _.ioBody(msg), !!ackFn);
 
     if (_.path(msg, 'header.msg.ack')) {
         var ackId = _.ioAckId(_.ioEmitter(msg));
@@ -60,8 +62,7 @@ var EMIT = function (io, $emit, signal, msg, ackFn) {
         ackFn = _.noFn();
     }
 
-    io.sockets.in(signal).emit(signal, msg);
-    io.sockets.in("*").emit("*", { signal: signal, msg: msg });
+    io.emit_(signal, msg);
 
     $emit.call(this, signal, msg, ackFn)
 
@@ -88,25 +89,46 @@ var overrideEmit = function (socket) {
     console.log('overrideEmit');
 }
 
+io.configure(function () {
+    io.set('authorization', function (handshakeData, callback) {
+        console.log("handshakeData.query: " + handshakeData.query);
+
+        /*
+        if (!handshakeData.query.type)
+            callback("missing 'type' in handshake params");
+        else if (!config.modules[handshakeData.query.type])
+            callback("unknown module type in handshake params:" + handshakeData.query.type);
+        else if (false)
+            callback("there is another instance of this type");
+
+        handshakeData.type = handshakeData.query.type;
+        */
+
+
+        callback(false,true);
+    });
+});
+
+io.ack = function (msg) {
+    var ackID = _.path(msg,'header.req.ack');
+    var ackFn = ackCache[ackID]
+    if (_.isFunction(ackFn))
+        ackFn(msg);
+    else
+        console.log("no ackFn found for id:", ackID)
+    delete ackCache[ackID];
+}
 
 var onConnection = function (socket) {
     console.log('connection');
-
     socket.$emit = EMIT.bind(socket, io, socket.$emit);
 
     socket.on('CORE_SL_SLOTS_SET', CORE_SL_SLOTS_SET);
 
-    socket.on('ACK', function (msg, ackFn) {
-        console.log('ACK msg-body:', msg.body);
-        var ackID = _.path(msg,'header.req.ack');
-        var ackFn = ackCache[ackID]
-        if (_.isFunction(ackFn))
-            ackFn(msg);
-        else
-            console.log("no ackFn found for id:", ackID)
-        delete ackCache[ackID];
-    });
+    socket.on('ACK', io.ack);
 
 }
 
 io.sockets.on('connection', onConnection);
+
+var pilot = require('../PILOT/index').init(io);

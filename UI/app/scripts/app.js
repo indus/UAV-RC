@@ -7,9 +7,10 @@ angular.module('uavRcApp', [
   'leaflet-directive'*/ //TODO: delete from bower_components (and never try again)
 ]).
 factory('socket', function (socketFactory) {
-    var ioSocket = io.connect('http://localhost:8081'); //  || window.location.port ? 'http://localhost:8080' : ''
+    console.log();
+    var ioSocket = io.connect('http://localhost:8081', { query: [["type", "UI"]].join("&").replace(/,/g, '=') }); //  || window.location.port ? 'http://localhost:8080' : ''
 
-
+    
 
     var socket = socketFactory({
         ioSocket: ioSocket
@@ -61,13 +62,20 @@ factory('socket', function (socketFactory) {
         }
     }
 
+    socket.on('connect_failed', function (err) {
+        console.log("failed",err);
+    });
+
+    socket.on('error', function (err) {
+        console.log("error", err);
+    })
+
     socket.on('connect', function () {
         var moduleDesc = {
             slots: _.keys(self.slots)
         }
         var msg = _.ioMsg(null, moduleDesc)
         msg.header.msg.ack = true;
-        console.log(msg);
         socket.emit('CORE_SL_SLOTS_SET', msg, onLink)
     });
 

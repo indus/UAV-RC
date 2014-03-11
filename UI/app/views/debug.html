@@ -18,14 +18,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="dataTextarea">message</label>
-                    <pre>{{ msg | json }}</pre>
-                    <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()" style="max-width: 100%;"></textarea>
-                </div>
-                <div class="form-group">
                     <input type="checkbox" ng-model="msg.header.msg.ack" ng-init="msg.header.msg.ack=false" />
                     <label for="dataTextarea">acknowledge</label>
                     <button type="button" class="btn btn-warning pull-right" ng-disabled="!linked || !signal || !validBody" ng-click="emit()">emit</button>
+                </div>
+                <div class="form-group">
+                    <label for="dataTextarea">message</label>
+                    <pre>{{ msg | json }}</pre>
+                    <textarea id="msgBody" class="form-control" rows="3" name="data" placeholder="body" ng-model="dataString" ng-change="dataChange()" style="max-width: 100%;"></textarea>
                 </div>
 
             </form>

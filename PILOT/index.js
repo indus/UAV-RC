@@ -1,140 +1,105 @@
-﻿'use strict'
+﻿var io;
+var tgtList = [];
+var currentTgt;
+var currentTgtIndex;
+this.id = "PILOT";
+_ = require('../CORE/lodash.uav.utility.js')(require('lodash'), this.id);
 
 
-
-define(['module', 'args', 'lodash', 'socket.io-client', 'geolib', 'uavModel'], function (m, args, _, socketIO, geolib, uav) {
-    var self = this;
-    this.id = m.id;
-
-    this.signals = {
-        debug: true,
-        COMMAND_GOTO: true,
-        POLL_GPS_DATA:true
-    };
-
-    this.slots = {
-        debug: function () {
-
-        },
-        TRACK: function (data) {
-            console.log("TRACK", data);
-            self.track = data;
-            if (self.track.autostart) {
-                self.slots.TRACK_START()
+var UAV_TARGET_IS = function (msg) {
+    console.log(msg.body.id, msg.body.status)
+    tgtList[msg.body.id].status = msg.body.status;
+    switch (msg.body.status) {
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            if ((tgtList.length > currentTgtIndex + 1) && tgtList[currentTgtIndex + 1].autoStart) {
+                setTimeout(UAV_TARGET_SET, tgtList[currentTgtIndex].autoStart, currentTgtIndex += 1)
+                //UAV_TARGET_SET(currentTgtIndex += 1);
             }
-
-        },
-        TRACK_START: function () {
-            console.log("TRACK_START");
-            self.track_i = 0;
-            self.TRACK_NEXT();
-            setTimeout(self.POLL_GPS_DATA, 1000)
-
-        },
-        GPS_DATA: function (data) {
-            console.log('GPS_DATA');
-            if (geolib.getDistance(self.wpt_next, data) < 0.005) {
-                self.TRACK_NEXT()
-            }
-
-        }
-    };
-
-    this.track;
-
-    this.TRACK_NEXT = function () {
-
-        console.log("next");
-        self.track_i++;
-        var wpt = self.track.latlngs[self.track_i];
-
-        self.wpt_next = {
-            latitude: wpt.lat,
-            longitude: wpt.lng,
-            height: 20
-        }
-        self.io.emit('COMMAND_GOTO', self.wpt_next)
-    }
-
-    this.POLL_GPS_DATA = function () {
-        console.log('POLL_GPS_DATA');
-        self.io.emit('POLL_GPS_DATA')
-
-        if (true) {
-            setTimeout(function () {
-                self.POLL_GPS_DATA()
-            }, 10)
-        }
+            break;
+        default:;
     }
 
 
-    this.io = socketIO.connect(args.url, {
-        'reconnection delay': 0,
-        'max reconnection attempts': 10
-    });
+}
 
-    var io = this.io;
+var UAV_TARGET_SET = function (index) {
+    io.emit_("UAV_TARGET_SET", _.ioMsg(null, tgtList[currentTgtIndex]));
 
-    _.each(this.slots, function (fn, slot) {
-        io.on(slot, fn)
+    var debugUpdateStatus = function () {
+        var msg = _.ioMsg(null, tgtList[index], null, "UAV")
+        io.emit_("UAV_TARGET_IS", msg);
+        UAV_TARGET_IS(msg)
+        var status = tgtList[index].status;
+        if (status < 3)
+            setTimeout(debugUpdateStatus, [50, 1000, 500][status]);
+        tgtList[index].status += (!tgtList[index].cam.trigger && status == 1) ? 2 : 1;
+    }
+    debugUpdateStatus();
+}
+
+
+var PILOT_TARGETLIST_SET = function (msg) {
+    currentTgtIndex = -1;
+    var body = msg.body;
+    tgtList = _.map(body.list, function (target,i) {
+        _.defaults(target, body.defaults)
+        _.defaults(target.cam, body.defaults.cam)
+        target.listId = msg.body.id;
+        target.id = i;
+        return target;
+    })
+    console.log(tgtList);
+
+    if (tgtList[currentTgtIndex+1].autoStart)
+        UAV_TARGET_SET(currentTgtIndex+=1);
+
+}
+
+var PILOT_TARGETLIST_GET = function (msg) {
+    io.emit_("PILOT_TARGETLIST_IS", _.ioMsg(null, { list: tgtList }));
+    if (_.path(msg, 'header.msg.ack'))
+        io.ack(_.ioMsg(null, { test: "test" }, msg))
+}
+
+exports.init = function (io_) {
+    io = io_;
+
+
+    io_.sockets.on("connection", function (socket) {
+
+
+        socket.on("UAV_TARGET_IS", UAV_TARGET_IS)
+        socket.on("PILOT_TARGETLIST_SET", PILOT_TARGETLIST_SET)
+        socket.on("PILOT_TARGETLIST_GET", PILOT_TARGETLIST_GET)
+
+
+
+
+        /*
+        if (socket.handshake.query.type !== "UI" && socket.handshake.query.type !== "UAV")
+            return;
+
+        switch (socket.handshake.query.type) {
+            case "UI":
+                socket.on("UAV_TARGET_IS", UAV_TARGET_IS)
+                socket.on("PILOT_TARGETLIST_GET", PILOT_TARGETLIST_GET)
+                break;
+            case "UAV":
+                socket.on("UAV_TARGET_IS", UAV_TARGET_IS)
+                break;
+            default:
+                //nothing to do
+                socket.on("PILOT_TARGETLIST_SET", PILOT_TARGETLIST_SET)
+                socket.on("PILOT_TARGETLIST_GET", PILOT_TARGETLIST_GET)
+                break;
+        }*/
     })
 
-
-    //Fired upon a succesful connection.
-    io.on('connect', function () {
-        console.log("connect");
-
-        var moduleDesc = {
-            id: self.id,
-            signals: _.keys(self.signals),
-            slots: _.keys(self.slots)
-        }
-
-        io.emit('link', moduleDesc, self.onLink)
-    });
-
-    //Fired upon a succesful connection.
-    io.on('connect_failed', function (err, xhr, reconnecting) {
-        if (reconnecting) {
-            var attempt = io.socket['reconnectionAttempts'] - 1;
-            var attemptMax = io.socket.options['max reconnection attempts'];
-            console.log("\u001b[1Fconnect_failed; reconnecting: (" + attempt + "/" + attemptMax + ")");
-        } else {
-            io.socket.reconnect();
-        }
-    });
-
-    //Fired upon a connection error.
-    io.on('connect_error', function (err) { //Object error object
-        console.log("connect_error");
-    });
-
-    //Fired upon a error.
-    io.on('error', function (err, a, b) { //Object error object
-        console.log("error", err);
-        //socket.reconnect();
-    });
-
-    //Fired upon a connection timeout
-    io.on('connect_timeout', function () {
-        console.log("connect_timeout");
-    });
-
-    //Fired upon a successful reconnection.
-    io.on('reconnect', function () { //Number reconnection attempt number
-        console.log("reconnect");
-    });
-
-    //Fired upon a reconnection attempt error
-    io.on('reconnect_error', function (err) { //Object error object
-        console.log("reconnect_error");
-    });
-
-    //Fired upon a failed attempt reconnection.
-    io.on('reconnect_failed', function () {
-        console.log("reconnect_failed");
-    });
-
     return this;
-
-});
+};

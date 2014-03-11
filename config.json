@@ -18,6 +18,9 @@
 			"pathStaticWebFiles":"/../UI/app",
 			"ackTimeout":3000
 		}
+		,"UI":{
+			"singelton":true
+		}
 		,"dummyJSModule":{
 			"path": "src/dummy/dummyJS"
 		}

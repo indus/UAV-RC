@@ -41,11 +41,11 @@ _.mixin(
                 return (noMsgSignals.indexOf(signal) + 1)
             }
         },
-        ioMsg: function (error, body, reqMsg) {
+        ioMsg: function (error, body, reqMsg,name) {
             var msg = {
                 "header": {
                     "msg": {
-                        "emitter": id || "NO_NAME",
+                        "emitter": name || id || "NO_NAME",
                         "id": Math.random().toString(36).substring(2, 11),
                         "timestamp": +new Date()
                     }

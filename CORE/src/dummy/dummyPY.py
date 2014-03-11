@@ -46,9 +46,13 @@ def on_dummyPYSignal(*args):
 def on_GPS_DATA(*args):
   print "HALLO"
   print "args: ", args;
+
+def onTest(*args):
+  print "HALLO"
+  print "args: ", args;
   
 
-socketIO = SocketIO(config.host, config.port)
+socketIO = SocketIO(config.host, config.port,params={'q': 'qqq'})
 socketIO.on('connect', on_connect)
 #socketIO.on('dummyPYSlot', on_dummyPYSlot)
 
