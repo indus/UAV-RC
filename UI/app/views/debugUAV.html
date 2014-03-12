@@ -1,0 +1,99 @@
+﻿<div class="container" style="padding-top:20px">
+    <div class="row">
+
+        <div class="col-md-3 col-md-offset-1">
+            <h2 class="right">CAM</h2>
+
+            <h5 class="right">UAV_CAM_ANGLE_SET</h5>
+<form class="form-horizontal" role="form" name="camForm" ng-init="cam = {pitch:14,roll:15}">
+    <div class="form-group">
+        <label for="pitch" class="col-sm-5 control-label">pitch</label>
+        <div class="col-sm-7">
+            <input type="number" ng-model="cam.pitch" class="form-control" id="pitch" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="roll" class="col-sm-5 control-label">roll</label>
+        <div class="col-sm-7">
+            <input type="number" ng-model="cam.roll" class="form-control" id="roll" />
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-warning col-sm-5" ng-disabled="!linked" ng-click="emitCam(cam)">set Cam Angle</button>
+    </div>
+</form>
+        </div>
+        <div class="col-md-3">
+            <h2 class="right">TARGET</h2>
+
+            <h5 class="right">UAV_TARGET_SET</h5>
+            <form class="form-horizontal" role="form" name="targetForm" ng-init="target = { lat: 10, lon: 11 ,alt:12,heading:13,autoStart:true,cam:{pitch:14,roll:15,trigger:false}}">
+            <div class="form-group" ng-class="{'has-error':false}">
+            <label for="lat" class="col-sm-5 control-label">lat</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.lat" class="form-control" id="lat" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="lon" class="col-sm-5 control-label">lon</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.lon" class="form-control" id="lon" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="alt" class="col-sm-5 control-label">alt</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.alt" class="form-control" id="alt" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="heading" class="col-sm-5 control-label">heading</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.heading" class="form-control" id="heading" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="autoStart" class="col-sm-5 control-label">autoStart</label>
+            <div class="col-sm-7">
+            <input type="checkbox" ng-model="target.autoStart" id="autoStart" style="margin-top:11px;" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="camPitch" class="col-sm-5 control-label">cam.pitch</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.cam.pitch" class="form-control" id="camPitch" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="camRoll" class="col-sm-5 control-label">cam.roll</label>
+            <div class="col-sm-7">
+            <input type="number" ng-model="target.cam.roll" class="form-control" id="camRoll" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <label for="triggerCam" class="col-sm-5 control-label">cam.trigger</label>
+            <div class="col-sm-7">
+            <input type="checkbox" ng-model="target.cam.trigger" id="triggerCam" style="margin-top:11px;" />
+                    </div>
+                </div>
+            <div class="form-group">
+            <button type="button" class="btn btn-warning col-sm-5" ng-disabled="!linked" ng-click="emitTarget(target)">set Target</button>
+                </div>
+</form>
+            
+</div>
+        <div class="col-md-3">
+            <h2 class="right">POLLING</h2>
+            <h5 class="right">GENERIC</h5>
+            <div ng-repeat="(key,value) in pollings">
+                <pre ng-click="collapse = ! collapse">{{key}}<button class="btn btn-xs pull-right btn-warning" ng-click="poll($event,key);collapse =true"><span class="glyphicon glyphicon-refresh"></span></button><div ng-class="{collapse:!collapse}">{{ value | json }}</div></pre>
+            </div>
+            <h5 class="right">ASCTEC</h5>
+            <div ng-repeat="(key,value) in asctecPollings">
+                <pre ng-click="collapse = ! collapse">{{key}}<button class="btn btn-xs pull-right btn-warning" ng-click="poll($event,key);collapse =true"><span class="glyphicon glyphicon-refresh"></span></button><div ng-class="{collapse:!collapse}">{{ value | json }}</div></pre>
+            </div>
+        </div>
+
+    </div>
+
+</div>

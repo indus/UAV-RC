@@ -39,6 +39,10 @@ factory('socket', function (socketFactory) {
             templateUrl: 'views/debug.html',
             controller: 'DebugCtrl'
         })
+        .when('/debugUAV', {
+            templateUrl: 'views/debugUAV.html',
+            controller: 'DebuguavCtrl'
+        })
         .otherwise({
             redirectTo: '/'
         });

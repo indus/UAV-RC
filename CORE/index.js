@@ -92,6 +92,8 @@ var overrideEmit = function (socket) {
 io.configure(function () {
     io.set('authorization', function (handshakeData, callback) {
         console.log("handshakeData.query: " + handshakeData.query);
+        if (!handshakeData.query.type)
+            console.error("missing 'type' in handshake params")
 
         /*
         if (!handshakeData.query.type)
